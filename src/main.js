@@ -1,5 +1,6 @@
 import { createFilmCardTemplate } from './view/film-card';
-import { createFilmListTemplate } from './view/film-container';
+import { filmsListContainer } from './view/films-container';
+import { createFilmListTemplate } from './view/films-list-container';
 import { createFilmsCountTemplate } from './view/films-count-stat';
 import { createProfileRatingTemplate } from './view/header';
 import { createNavigationMenuTemplate } from './view/navigation-menu';
@@ -25,20 +26,22 @@ const siteMainElement = document.querySelector('.main');
 renderPage(siteMainElement, createNavigationMenuTemplate(), 'beforeend');
 renderPage(siteMainElement, createSortMenuTemplate(), 'beforeend');
 
+renderPage(siteMainElement, filmsListContainer(), 'beforeend');
 
-renderPage(siteMainElement, createFilmListTemplate(), 'beforeend');
+const filmsContainer = document.querySelector('.films');
+renderPage(filmsContainer, createFilmListTemplate(), 'beforeend');
 const filmCardContainer = document.querySelector('.films-list__container');
 for (let i = 0; i < FILMS_COUNT; i++) {
   renderPage(filmCardContainer, createFilmCardTemplate(), 'beforeend');
 }
 
-renderPage(siteMainElement, createTopRatedFilmsListTemplate(), 'beforeend');
+renderPage(filmsContainer, createTopRatedFilmsListTemplate(), 'beforeend');
 const topRatedFilmsElement = document.querySelector('.films-list--top-rated > .films-list__container');
 for (let i = 0; i < TOP_RATED_FILMS_COUNT; i++) {
   renderPage(topRatedFilmsElement, createFilmCardTemplate(), 'beforeend');
 }
 
-renderPage(siteMainElement, createMostCommentedFilmsListTemplate(), 'beforeend');
+renderPage(filmsContainer, createMostCommentedFilmsListTemplate(), 'beforeend');
 const mostCommentedFilmsElement = document.querySelector('.films-list--most-commented > .films-list__container');
 for (let i = 0; i < MOST_COMMENTED_FILMS_COUNT; i++) {
   renderPage(mostCommentedFilmsElement, createFilmCardTemplate(), 'beforeend');
