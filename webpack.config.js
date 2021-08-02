@@ -8,7 +8,7 @@ module.exports = {
   },
   devtool: 'source-map',
   devServer: {
-    contentBase: path.resolve(__dirname, 'publick'),
+    contentBase: path.resolve(__dirname, 'public'),
     watchContentBase: true,
   }
 }
