@@ -12,8 +12,31 @@ const getRandomInteger = (min, max) => {
   return Math.round(rand);
 };
 
-const renderPage = (container, template, place) => {
+export const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
+export const renderTemplate = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
+};
+
+export const renderElement = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
 };
 
 const isFilmInWatchlist = () => getRandomInteger(0, 1);
@@ -24,4 +47,4 @@ const isFilmInFavorites = () => getRandomInteger(0, 1);
 
 const isFilmWatched = () => getRandomInteger(0, 1);
 
-export { getRandomFloat, getRandomInteger, renderPage, isDescriptionLarge, DESCRIPTION_LIMIT, isFilmInWatchlist, isFilmInHistory, isFilmInFavorites, isFilmWatched };
+export { getRandomFloat, getRandomInteger, isDescriptionLarge, DESCRIPTION_LIMIT, isFilmInWatchlist, isFilmInHistory, isFilmInFavorites, isFilmWatched };
