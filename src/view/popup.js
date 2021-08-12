@@ -1,8 +1,6 @@
-const createGenreItems = (genres) => {
-	return genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('')
-}
+const createGenreItems = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-export const createPopupTemplate = (film) => (`<section class="film-details visually-hidden">
+export const createPopupTemplate = (film) => (`<section class="film-details">
    <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
       <div class="film-details__close">
@@ -165,8 +163,3 @@ export const createPopupTemplate = (film) => (`<section class="film-details visu
       </div>
     </form>
   </section>`);
-
-
- /*<span class="film-details__genre">Drama</span>
-                  <span class="film-details__genre">Film-Noir</span>
-                  <span class="film-details__genre">Mystery</span>*/
