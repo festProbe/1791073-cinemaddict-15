@@ -1,7 +1,7 @@
-import { renderTemplate } from './utils/utils';
+import { renderTemplate, renderElement, RenderPosition } from './utils/utils';
 import { genetateFilmCard } from './mock/film-card';
 import { createFilmCardsTemplate } from './view/film-card';
-import { filmsContainerTemplate } from './view/films-container';
+import FilmContainerView from './view/films-container';
 import { createFilmListTemplate } from './view/films-list-container';
 import { createFilmsCountTemplate } from './view/films-count-stat';
 import { createProfileRatingTemplate } from './view/header';
@@ -29,7 +29,7 @@ const siteMainElement = document.querySelector('.main');
 renderTemplate(siteMainElement, createNavigationMenuTemplate(filter), 'beforeend');
 renderTemplate(siteMainElement, createSortMenuTemplate(), 'beforeend');
 
-renderTemplate(siteMainElement, filmsContainerTemplate(), 'beforeend');
+renderElement(siteMainElement, new FilmContainerView().getElement(), RenderPosition.BEFOREEND);
 
 const filmsContainer = document.querySelector('.films');
 renderTemplate(filmsContainer, createFilmListTemplate(), 'beforeend');
