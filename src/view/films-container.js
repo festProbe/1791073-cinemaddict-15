@@ -1,1 +1,1 @@
-export const filmsListContainer = () => '<section class="films"></section>';
+export const filmsContainerTemplate = () => '<section class="films"></section>';
