@@ -1,5 +1,6 @@
-const ACTIVE_BUTTON_CLASS = 'film-card__controls-item--active';
+import { createElement } from '../utils/utils';
 
+const ACTIVE_BUTTON_CLASS = 'film-card__controls-item--active';
 
 export const createControlsTemplate = (film) => {
   let inWatchlistButtonActive;
@@ -21,3 +22,26 @@ export const createControlsTemplate = (film) => {
   <button class="${inFavoriteButtonActive} film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
 </div>`;
 };
+
+export default class FilmCardControls{
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createControlsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -13,7 +13,7 @@ const getRandomInteger = (min, max) => {
 };
 
 export const RenderPosition = {
-  AFTERBEGIN: 'afterbegin',
+  AFTEREEND: 'afterend',
   BEFOREEND: 'beforeend',
 };
 
@@ -23,8 +23,8 @@ export const renderTemplate = (container, template, place) => {
 
 export const renderElement = (container, element, place) => {
   switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+    case RenderPosition.AFTEREEND:
+      container.before(element);
       break;
     case RenderPosition.BEFOREEND:
       container.append(element);

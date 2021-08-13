@@ -1,6 +1,8 @@
+import { createElement } from '../utils/utils';
+
 const createGenreItems = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-export const createPopupTemplate = (film) => (`<section class="film-details">
+const createPopupTemplate = (film) => (`<section class="film-details">
    <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
       <div class="film-details__close">
@@ -163,3 +165,27 @@ export const createPopupTemplate = (film) => (`<section class="film-details">
       </div>
     </form>
   </section>`);
+
+export default class FilmCard {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate(film) {
+    document.querySelector('body').classList.add('hide-overflow');
+    return createPopupTemplate(film);
+  }
+
+  getElement(film) {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate(film));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this.getElement().remove();
+    this._element = null;
+  }
+}
