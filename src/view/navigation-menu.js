@@ -1,5 +1,7 @@
-const generateFilterItemTemlate = (filter) => {
-  const { name, count } = filter;
+import { createElement } from '../utils/utils';
+
+const generateFilterItemTemlate = (filters) => {
+  const { name, count } = filters;
 
   return `<a href="#${name}" class="main-navigation__item">${name}
   <span class="main-navigation__item-count">${count}</span></a>
@@ -7,7 +9,7 @@ const generateFilterItemTemlate = (filter) => {
 };
 
 
-export const createNavigationMenuTemplate = (filterItems) => {
+const createNavigationMenuTemplate = (filterItems) => {
   const filterItemsTemplate = filterItems
     .map((filter, index) => generateFilterItemTemlate(filter, index === 0))
     .join('');
@@ -21,7 +23,24 @@ export const createNavigationMenuTemplate = (filterItems) => {
   </nav>`;
 };
 
+export default class Filters{
+  constructor(filters) {
+    this._element = null;
+    this._filters = filters;
+  }
 
-/*
-<a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">4</span></a>
-<a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">8</span></a>*/
+  getTemplate() {
+    return createNavigationMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element){
+      return createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

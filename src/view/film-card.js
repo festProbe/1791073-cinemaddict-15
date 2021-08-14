@@ -1,6 +1,6 @@
-import { isDescriptionLarge, DESCRIPTION_LIMIT } from '../utils/utils';
+import { isDescriptionLarge, DESCRIPTION_LIMIT, createElement } from '../utils/utils';
 
-export const createFilmCardsTemplate = (film) => {
+const createFilmCardsTemplate = (film) => {
 
   let shortDescrption = film.description;
 
@@ -21,3 +21,26 @@ export const createFilmCardsTemplate = (film) => {
   <a class="film-card__comments">${film.commentsCount} comments</a>
   </article>`;
 };
+
+export default class FilmCard{
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCardsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
