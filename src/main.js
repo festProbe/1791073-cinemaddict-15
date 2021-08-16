@@ -14,7 +14,7 @@ import TopRatedListView from './view/top-rated-films-container';
 import MostCommentedListView from './view/most-commented-films-container';
 import FilmsStatView from './view/films-count-stat';
 
-const FILM_COUNT = 22;
+const FILM_COUNT = 0;
 const FILM_COUNT_PER_STEP = 5;
 const TOP_RATED_FILM_COUNT = 2;
 const MOST_COMMENTED_FILM_COUNT = 2;
@@ -82,11 +82,6 @@ const renderFilmCard = (container, film) => {
   return renderElement(container, filmCard.getElement(), RenderPosition.BEFOREEND);
 };
 
-const filmListHiddenTitile = filmList.getElement().querySelector('.films-list__title');
-if (films.length === 0) {
-  filmListHiddenTitile.classList.remove('visually-hidden');
-}
-
 const filmListContainer = filmList.getElement().querySelector('.films-list__container');
 for (let i = 0; i < Math.min(films.length, FILM_COUNT_PER_STEP); i++) {
   renderFilmCard(filmListContainer, films[i], RenderPosition.BEFOREEND);
@@ -133,3 +128,10 @@ for (let i = 0; i < mostCommentedFilms.length; i++) {
 
 const siteFooterStatisticElement = document.querySelector('.footer__statistics');
 renderElement(siteFooterStatisticElement, new FilmsStatView().getElement(), RenderPosition.BEFOREEND);
+
+const filmListHiddenTitile = filmList.getElement().querySelector('.films-list__title');
+if (films.length === 0) {
+  filmListHiddenTitile.classList.remove('visually-hidden');
+  filmContainer.getElement().removeChild(topRatedList.getElement());
+  filmContainer.getElement().removeChild(mostCommentedFilmList.getElement());
+}
