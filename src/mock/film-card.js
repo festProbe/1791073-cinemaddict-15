@@ -1,4 +1,5 @@
-import { getRandomFloat, getRandomInteger, isFilmInFavorites, isFilmInHistory, isFilmInWatchlist, isFilmWatched } from '../utils/utils.js';
+import { getRandomFloat, getRandomInteger} from '../utils/common';
+import { isFilmInFavorites, isFilmInHistory, isFilmInWatchlist, isFilmWatched } from '../utils/component';
 import dayjs from 'dayjs';
 
 const FilmsInfo = {

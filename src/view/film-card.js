@@ -1,4 +1,5 @@
-import { isDescriptionLarge, DESCRIPTION_LIMIT } from '../utils/utils';
+import { DESCRIPTION_LIMIT } from '../utils/constant';
+import { isDescriptionLarge } from '../utils/component';
 import AbstractComponent from './abstract-component';
 
 const createFilmCardsTemplate = (film) => {
@@ -23,7 +24,7 @@ const createFilmCardsTemplate = (film) => {
   </article>`;
 };
 
-export default class FilmCard extends AbstractComponent{
+export default class FilmCard extends AbstractComponent {
   constructor(film) {
     super();
     this._film = film;

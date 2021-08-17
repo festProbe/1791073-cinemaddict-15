@@ -1,4 +1,5 @@
-import { renderElement, RenderPosition } from './utils/utils';
+import { FILM_COUNT, FILM_COUNT_PER_STEP, TOP_RATED_FILM_COUNT, MOST_COMMENTED_FILM_COUNT } from './utils/constant';
+import { renderElement, RenderPosition } from './utils/render';
 import { genetateFilmCard } from './mock/film-card';
 import { generateFilter } from './mock/filters';
 import ProfileRatingView from './view/header';
@@ -14,30 +15,25 @@ import TopRatedListView from './view/top-rated-films-container';
 import MostCommentedListView from './view/most-commented-films-container';
 import FilmsStatView from './view/films-count-stat';
 
-const FILM_COUNT = 15;
-const FILM_COUNT_PER_STEP = 5;
-const TOP_RATED_FILM_COUNT = 2;
-const MOST_COMMENTED_FILM_COUNT = 2;
-
 const films = new Array(FILM_COUNT).fill('').map(genetateFilmCard);
 const filters = generateFilter(films);
 
 const siteHeaderElement = document.querySelector('.header');
-renderElement(siteHeaderElement, new ProfileRatingView().getElement(), RenderPosition.BEFOREEND);
+renderElement(siteHeaderElement, new ProfileRatingView(), RenderPosition.BEFOREEND);
 
 const siteMainElement = document.querySelector('.main');
-renderElement(siteMainElement, new FIltersView(filters).getElement(), RenderPosition.BEFOREEND);
-renderElement(siteMainElement, new SortMenuView().getElement(), RenderPosition.BEFOREEND);
+renderElement(siteMainElement, new FIltersView(filters), RenderPosition.BEFOREEND);
+renderElement(siteMainElement, new SortMenuView(), RenderPosition.BEFOREEND);
 
 const filmContainer = new FilmContainerView();
-renderElement(siteMainElement, filmContainer.getElement(), RenderPosition.BEFOREEND);
+renderElement(siteMainElement, filmContainer, RenderPosition.BEFOREEND);
 
 const filmList = new FilmListView();
-renderElement(filmContainer.getElement(), filmList.getElement(), RenderPosition.BEFOREEND);
+renderElement(filmContainer, filmList, RenderPosition.BEFOREEND);
 const topRatedList = new TopRatedListView();
-renderElement(filmContainer.getElement(), topRatedList.getElement(), RenderPosition.BEFOREEND);
+renderElement(filmContainer, topRatedList, RenderPosition.BEFOREEND);
 const mostCommentedFilmList = new MostCommentedListView();
-renderElement(filmContainer.getElement(), mostCommentedFilmList.getElement(), RenderPosition.BEFOREEND);
+renderElement(filmContainer, mostCommentedFilmList, RenderPosition.BEFOREEND);
 
 const footerElement = document.querySelector('.footer');
 
@@ -46,11 +42,11 @@ const renderFilmCard = (container, film) => {
   const filmCardControls = new FilmCardControlsView(film);
 
 
-  renderElement(filmCard.getElement(), filmCardControls.getElement(), RenderPosition.BEFOREEND);
+  renderElement(filmCard, filmCardControls, RenderPosition.BEFOREEND);
 
   const showPopup = (filmData) => {
     const filmPopup = new FilmPopupView(filmData);
-    renderElement(footerElement, filmPopup.getElement(), RenderPosition.AFTEREEND);
+    renderElement(footerElement, filmPopup, RenderPosition.AFTEREEND);
 
     const closePopupHandler = () => {
       document.querySelector('body').classList.remove('hide-overflow');
@@ -75,7 +71,7 @@ const renderFilmCard = (container, film) => {
 
   filmCard.setClickHandler(openPopupClickHandler);
 
-  return renderElement(container, filmCard.getElement(), RenderPosition.BEFOREEND);
+  return renderElement(container, filmCard, RenderPosition.BEFOREEND);
 };
 
 const filmListContainer = filmList.getElement().querySelector('.films-list__container');
@@ -87,7 +83,7 @@ if (films.length > FILM_COUNT_PER_STEP) {
   let renderedFilmCount = FILM_COUNT_PER_STEP;
 
   const showMoreButton = new ShowMoreButtonView();
-  renderElement(filmList.getElement(), showMoreButton.getElement(), RenderPosition.BEFOREEND);
+  renderElement(filmList, showMoreButton, RenderPosition.BEFOREEND);
 
   showMoreButton.setClickHandler(() => {
     films
@@ -122,7 +118,7 @@ for (let i = 0; i < mostCommentedFilms.length; i++) {
 }
 
 const siteFooterStatisticElement = document.querySelector('.footer__statistics');
-renderElement(siteFooterStatisticElement, new FilmsStatView().getElement(), RenderPosition.BEFOREEND);
+renderElement(siteFooterStatisticElement, new FilmsStatView(), RenderPosition.BEFOREEND);
 
 const filmListHiddenTitile = filmList.getElement().querySelector('.films-list__title');
 if (films.length === 0) {
