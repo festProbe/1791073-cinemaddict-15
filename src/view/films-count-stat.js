@@ -1,25 +1,9 @@
-import { createElement } from '../utils/utils';
+import AbstractComponent from './abstract-component';
 
 const createFilmsCountTemplate = () => '<p>130 291 movies inside</p';
 
-export default class FilmsStat{
-  constructor() {
-    this._element = null;
-  }
-
+export default class FilmsStat extends AbstractComponent{
   getTemplate() {
     return createFilmsCountTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

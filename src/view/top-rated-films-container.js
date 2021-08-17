@@ -1,4 +1,4 @@
-import { createElement } from '../utils/utils';
+import AbstractComponent from './abstract-component';
 
 const createTopRatedFilmsListTemplate = () => (
   `<section class="films-list films-list--extra films-list--top-rated">
@@ -7,23 +7,8 @@ const createTopRatedFilmsListTemplate = () => (
   </section>`
 );
 
-export default class TopRatedFilmsList{
-  constructor() {
-    this._element = null;
-  }
-
+export default class TopRatedFilmsList extends AbstractComponent{
   getTemplate() {
     return createTopRatedFilmsListTemplate();
-  }
-
-  getElement() {
-    if (!this._element){
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

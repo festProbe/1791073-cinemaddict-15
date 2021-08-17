@@ -14,7 +14,7 @@ import TopRatedListView from './view/top-rated-films-container';
 import MostCommentedListView from './view/most-commented-films-container';
 import FilmsStatView from './view/films-count-stat';
 
-const FILM_COUNT = 0;
+const FILM_COUNT = 15;
 const FILM_COUNT_PER_STEP = 5;
 const TOP_RATED_FILM_COUNT = 2;
 const MOST_COMMENTED_FILM_COUNT = 2;
@@ -41,9 +41,6 @@ renderElement(filmContainer.getElement(), mostCommentedFilmList.getElement(), Re
 
 const footerElement = document.querySelector('.footer');
 
-const filmPopup = new FilmPopupView();
-const createPopup = (filmData) => filmPopup.getElement(filmData);
-
 const renderFilmCard = (container, film) => {
   const filmCard = new FilmCardView(film);
   const filmCardControls = new FilmCardControlsView(film);
@@ -52,7 +49,8 @@ const renderFilmCard = (container, film) => {
   renderElement(filmCard.getElement(), filmCardControls.getElement(), RenderPosition.BEFOREEND);
 
   const showPopup = (filmData) => {
-    renderElement(footerElement, createPopup(filmData), RenderPosition.AFTEREEND);
+    const filmPopup = new FilmPopupView(filmData);
+    renderElement(footerElement, filmPopup.getElement(), RenderPosition.AFTEREEND);
 
     const closePopupHandler = () => {
       document.querySelector('body').classList.remove('hide-overflow');
