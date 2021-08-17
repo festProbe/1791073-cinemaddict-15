@@ -1,4 +1,4 @@
-import { createElement } from '../utils/utils';
+import AbstractComponent from './abstract-component';
 
 const createSortMenuTemplate = () => (
   `<ul class="sort">
@@ -8,23 +8,8 @@ const createSortMenuTemplate = () => (
   </ul>`
 );
 
-export default class SortMenu {
-  constructor() {
-    this._element = null;
-  }
-
+export default class SortMenu extends AbstractComponent{
   getTemplate() {
     return createSortMenuTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      return createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

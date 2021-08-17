@@ -1,4 +1,4 @@
-import { createElement } from '../utils/utils';
+import AbstractComponent from './abstract-component';
 
 const ACTIVE_BUTTON_CLASS = 'film-card__controls-item--active';
 
@@ -23,25 +23,13 @@ export const createControlsTemplate = (film) => {
 </div>`;
 };
 
-export default class FilmCardControls{
+export default class FilmCardControls extends AbstractComponent {
   constructor(film) {
-    this._element = null;
+    super();
     this._film = film;
   }
 
   getTemplate() {
     return createControlsTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

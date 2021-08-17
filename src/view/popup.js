@@ -1,4 +1,4 @@
-import { createElement } from '../utils/utils';
+import AbstractComponent from './abstract-component';
 
 const createGenreItems = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
@@ -166,26 +166,30 @@ const createPopupTemplate = (film) => (`<section class="film-details">
     </form>
   </section>`);
 
-export default class FilmCard {
-  constructor() {
-    this._element = null;
+export default class FilmCard extends AbstractComponent{
+  constructor(film) {
+    super();
+    this._film = film;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
-  getTemplate(film) {
+  getTemplate() {
     document.querySelector('body').classList.add('hide-overflow');
-    return createPopupTemplate(film);
-  }
-
-  getElement(film) {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(film));
-    }
-
-    return this._element;
+    return createPopupTemplate(this._film);
   }
 
   removeElement() {
     this.getElement().remove();
     this._element = null;
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._clickHandler);
   }
 }
