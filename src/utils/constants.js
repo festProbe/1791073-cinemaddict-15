@@ -5,16 +5,26 @@ const TOP_RATED_FILM_COUNT = 2;
 const MOST_COMMENTED_FILM_COUNT = 2;
 const FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS = 'film-card__controls-item--active';
 const POPUP_ACTIVE_CONTROL_BUTTON_CLASS = 'film-details__control-button--active';
+const SORT_ACTIVE_BUTTON_CLASS = 'sort__button--active';
 const PopupModes = {
   CLOSED: 'closed',
   OPENED: 'opened',
 };
+const SortTypes = {
+  DEFAULT: 'default',
+  BY_DATE: 'by-date',
+  BY_RATE: 'by-rating',
+};
 
-export { DESCRIPTION_LIMIT,
+export {
+  DESCRIPTION_LIMIT,
   FILM_COUNT,
   FILM_COUNT_PER_STEP,
   TOP_RATED_FILM_COUNT,
   MOST_COMMENTED_FILM_COUNT,
   POPUP_ACTIVE_CONTROL_BUTTON_CLASS,
   FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS,
-  PopupModes };
+  SORT_ACTIVE_BUTTON_CLASS,
+  PopupModes,
+  SortTypes
+};
