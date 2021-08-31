@@ -1,6 +1,6 @@
-import { DESCRIPTION_LIMIT } from '../utils/constant';
-import { isDescriptionLarge } from '../utils/component';
-import AbstractComponent from './abstract-component';
+import { DESCRIPTION_LIMIT } from '../../utils/constants';
+import { isDescriptionLarge } from '../../utils/component';
+import AbstractComponent from '../abstract-component';
 
 const createFilmCardsTemplate = (film) => {
 
@@ -20,7 +20,7 @@ const createFilmCardsTemplate = (film) => {
   </p>
   <img src="${film.poster}" alt="${film.filmName}" class="film-card__poster">
   <p class="film-card__description">${shortDescrption}</p>
-  <a class="film-card__comments">${film.commentsCount} comments</a>
+  <a class="film-card__comments">${film.comments.length} comments</a>
   </article>`;
 };
 

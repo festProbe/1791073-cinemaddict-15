@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component';
+import AbstractComponent from '../abstract-component';
 
 const createProfileRatingTemplate = () => (
   `<section class="header__profile profile">
