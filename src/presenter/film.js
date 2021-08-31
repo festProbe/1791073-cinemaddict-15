@@ -2,7 +2,6 @@ import FilmCardComponent from '../view/film-card-components/film-card';
 import FilmCardControls from '../view/film-card-components/film-controls';
 import FilmDetails from './popup';
 import { renderElement, RenderPosition, replace, remove } from '../utils/render';
-import { PopupModes } from '../utils/constants';
 
 export default class filmCard {
   constructor(container, changeData, popupChangeMode) {
@@ -13,7 +12,6 @@ export default class filmCard {
     this._filmCard = null;
     this._filmControls = null;
     this._popupPresenter = null;
-    this._mode = PopupModes.CLOSED;
 
     this._handleShowPopupClick = this._handleShowPopupClick.bind(this);
 
@@ -41,8 +39,12 @@ export default class filmCard {
       return;
     }
 
-    if (this._mode === PopupModes.CLOSED) {
+    if (this._container.getElement().contains(prevFilmComponent.getElement())) {
       replace(this._filmCard, prevFilmComponent);
+      this._renderFilmControls();
+      if (this._popupPresenter !== null) {
+        this._handleShowPopupClick();
+      }
     }
 
     remove(prevFilmComponent);
@@ -69,7 +71,6 @@ export default class filmCard {
         },
       ),
     );
-    this._renderFilmControls();
   }
 
   _handleToWatched() {
@@ -82,7 +83,6 @@ export default class filmCard {
         },
       ),
     );
-    this._renderFilmControls();
   }
 
   _handleToFavorites() {
@@ -95,7 +95,6 @@ export default class filmCard {
         },
       ),
     );
-    this._renderFilmControls();
   }
 
   _renderFilmControls() {
@@ -104,9 +103,8 @@ export default class filmCard {
 
   _handleShowPopupClick() {
     this._popupChangeMode();
-    this._popupPresenter = new FilmDetails(this._film, this._popupChangeMode);
-    this._popupPresenter.init();
-    this._mode = PopupModes.OPENED;
+    this._popupPresenter = new FilmDetails(this._popupChangeMode, this._changeData);
+    this._popupPresenter.init(this._film);
   }
 
   _renderFilmCard() {

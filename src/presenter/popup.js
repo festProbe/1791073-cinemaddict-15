@@ -1,4 +1,4 @@
-import { renderElement, RenderPosition } from '../utils/render';
+import {renderElement, RenderPosition} from '../utils/render';
 import FilmDetailsView from '../view/popup-components/popup';
 import PopupControls from '../view/popup-components/popup-controls';
 import PopupComment from '../view/popup-components/comments';
@@ -6,20 +6,29 @@ import NewComment from '../view/popup-components/new-comment-component';
 import { PopupModes } from '../utils/constants';
 
 export default class FilmDetails {
-  constructor(film, changeMode) {
-    this._film = film;
+  constructor(changeMode, changeData) {
     this._changeMode = changeMode;
+    this._changeData = changeData;
     this._body = document.querySelector('body');
 
     this._handleEscKeydown = this._handleEscKeydown.bind(this);
     this._handleClosePopup = this._handleClosePopup.bind(this);
+    this._handleToWatchlist = this._handleToWatchlist.bind(this);
+    this._handleToWatched = this._handleToWatched.bind(this);
+    this._handleToFavorites = this._handleToFavorites.bind(this);
   }
 
-  init() {
+  init(film) {
+    this._film = film;
     this._popup = new FilmDetailsView(this._film);
     this._popupControls = new PopupControls(this._film);
     this._newCommentElement = new NewComment();
     this._mode = PopupModes.OPENED;
+
+    this._popupControls.setInWatchlistClickHandler(this._handleToWatchlist);
+    this._popupControls.setInWatchedClickHandler(this._handleToWatched);
+    this._popupControls.setInFavoritesClickHandler(this._handleToFavorites);
+
     this._renderPopup();
     document.addEventListener('keydown', this._handleEscKeydown);
     this._popup.setClickHandler(this._handleClosePopup);
@@ -29,6 +38,42 @@ export default class FilmDetails {
     if (this._mode !== PopupModes.CLOSED) {
       this._mode = this._closePopup();
     }
+  }
+
+  _handleToWatchlist() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._film,
+        {
+          isInWatchlist: !this._film.isInWatchlist,
+        },
+      ),
+    );
+  }
+
+  _handleToWatched() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._film,
+        {
+          isWatched: !this._film.isWatched,
+        },
+      ),
+    );
+  }
+
+  _handleToFavorites() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._film,
+        {
+          isInFavorites: !this._film.isInFavorites,
+        },
+      ),
+    );
   }
 
   _renderPopupControls() {

@@ -25,7 +25,41 @@ export default class PopupControls extends AbstractDefault {
   constructor(film) {
     super();
     this._film = film;
+
+    this._inWatchListHandler = this._inWatchListHandler.bind(this);
+    this._inWatchedHandler = this._inWatchedHandler.bind(this);
+    this._inFavoritesHandler = this._inFavoritesHandler.bind(this);
   }
 
   getTemplate() { return createPopupControlsTemplate(this._film); }
+
+  _inWatchListHandler(evt) {
+    evt.preventDefault();
+    this._callback.inWatchlistClick();
+  }
+
+  _inWatchedHandler(evt) {
+    evt.preventDefault();
+    this._callback.inWatchedClick();
+  }
+
+  _inFavoritesHandler(evt) {
+    evt.preventDefault();
+    this._callback.inFavoritesClick();
+  }
+
+  setInWatchlistClickHandler(callback) {
+    this._callback.inWatchlistClick = callback;
+    this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._inWatchListHandler);
+  }
+
+  setInWatchedClickHandler(callback) {
+    this._callback.inWatchedClick = callback;
+    this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._inWatchedHandler);
+  }
+
+  setInFavoritesClickHandler(callback) {
+    this._callback.inFavoritesClick = callback;
+    this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._inFavoritesHandler);
+  }
 }
