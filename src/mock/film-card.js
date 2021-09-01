@@ -1,6 +1,8 @@
-import { getRandomFloat, getRandomInteger} from '../utils/common';
+import { getRandomFloat, getRandomInteger } from '../utils/common';
 import { isFilmInFavorites, isFilmInHistory, isFilmInWatchlist, isFilmWatched } from '../utils/component';
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
+import { generateComment } from './comments';
 
 const FilmsInfo = {
   _POSTERS_URL: [
@@ -87,7 +89,7 @@ const FilmsInfo = {
     'NC-17 — Лицам до 18 лет просмотр запрещен',
   ],
 
-  getId() { return getRandomInteger(0, 99999999); },
+  getId() { return nanoid(); },
   getPoster() { return this._POSTERS_URL[getRandomInteger(0, this._POSTERS_URL.length - 1)]; },
   getName() { return this._FILM_NAMES[getRandomInteger(0, this._FILM_NAMES.length - 1)]; },
   getDirectorName() { return this._DIRECTORS[getRandomInteger(0, this._DIRECTORS.length - 1)]; },
@@ -138,7 +140,6 @@ const genetateFilmCard = () => {
     duration: FilmsInfo.getDuration(),
     genre: FilmsInfo.getGenres()[0],
     description: FilmsInfo.getDescription(),
-    commentsCount: FilmsInfo.getCommentCount(),
     date: FilmsInfo.getDate(),
     directorName: FilmsInfo.getDirectorName(),
     screenWriters: FilmsInfo.getScreenWriterName(),
@@ -150,6 +151,7 @@ const genetateFilmCard = () => {
     isInHistory: isFilmInHistory(),
     isInFavorites: isFilmInFavorites(),
     isWatched: isFilmWatched(),
+    comments: new Array(getRandomInteger(0, 5)).fill('').map(generateComment),
   };
   return filmCard;
 };

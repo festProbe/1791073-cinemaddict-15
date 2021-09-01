@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component';
+import AbstractComponent from '../abstract-component';
 
 const generateFilterItemTemlate = (filters) => {
   const { name, count } = filters;

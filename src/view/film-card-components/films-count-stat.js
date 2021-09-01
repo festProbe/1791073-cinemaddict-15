@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component';
+import AbstractComponent from '../abstract-component';
 
 const createFilmsCountTemplate = () => '<p>130 291 movies inside</p';
 
