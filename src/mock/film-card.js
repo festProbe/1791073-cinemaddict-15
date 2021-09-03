@@ -122,7 +122,6 @@ const FilmsInfo = {
     const year = `19${getRandomInteger(0, 9)}${getRandomInteger(0, 9)}`;
     return dayjs().date(day).month(month).year(year).format('DD MMMM YYYY');
   },
-  getYear() { return `19${getRandomInteger(10, 99)}`; },
   getDuration() { return `${getRandomInteger(1, 2)}h ${getRandomInteger(0, 60)}m`; },
   getDescription() { return this._DESCRIPTION[getRandomInteger(0, this._DESCRIPTION.length - 1)]; },
   getCountry() { return this._COUNTRIES[getRandomInteger(0, this._COUNTRIES.length - 1)]; },
