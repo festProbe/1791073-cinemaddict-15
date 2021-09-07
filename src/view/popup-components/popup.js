@@ -1,4 +1,4 @@
-import AbstractComponent from '../abstract-component';
+import Smart from '../smart';
 
 const createGenreItems = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
@@ -79,7 +79,7 @@ const createPopupTemplate = (film) =>
     </form>
   </section>`;
 
-export default class FilmDetails extends AbstractComponent {
+export default class FilmDetails extends Smart {
   constructor(film) {
     super();
     this._film = film;
@@ -100,6 +100,8 @@ export default class FilmDetails extends AbstractComponent {
     evt.preventDefault();
     this._callback.click();
   }
+
+  _restoreHandlers(){}
 
   setClickHandler(callback) {
     this._callback.click = callback;
