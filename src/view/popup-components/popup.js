@@ -1,3 +1,4 @@
+import { transformDuration } from '../../utils/common';
 import Smart from '../smart';
 
 const createGenreItems = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
@@ -43,11 +44,11 @@ const createPopupTemplate = (film) =>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${film.date}</td>
+                <td class="film-details__cell">${film.releaseDate}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${film.duration}</td>
+                <td class="film-details__cell">${transformDuration(film.duration)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -101,7 +102,7 @@ export default class FilmDetails extends Smart {
     this._callback.click();
   }
 
-  _restoreHandlers(){}
+  _restoreHandlers() { }
 
   setClickHandler(callback) {
     this._callback.click = callback;

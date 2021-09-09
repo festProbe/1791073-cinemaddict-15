@@ -1,29 +1,19 @@
-import { DESCRIPTION_LIMIT } from '../../utils/constants';
 import { isDescriptionLarge } from '../../utils/component';
 import AbstractComponent from '../abstract-component';
-import dayjs from 'dayjs';
+import { transformDuration, transformFilmReleaseDateToYear, transformLongDescriptionToShort } from '../../utils/common';
 
-const createFilmCardsTemplate = (film) => {
-
-  let shortDescrption = film.description;
-
-  if (isDescriptionLarge(film.description)) {
-    shortDescrption = `${film.description.split('').slice(0, DESCRIPTION_LIMIT).join('')}...`;
-  }
-
-  return `<article class="film-card ">
+const createFilmCardsTemplate = (film) => `<article class="film-card ">
   <h3 class="film-card__title">${film.filmName}</h3>
   <p class="film-card__rating" value="${film.rating}">${film.rating}</p>
   <p class="film-card__info">
-    <span class="film-card__year">${dayjs(film.date).get('year')}</span>
-    <span class="film-card__duration">${film.duration}</span>
+    <span class="film-card__year">${transformFilmReleaseDateToYear(film.releaseDate)}</span>
+    <span class="film-card__duration">${transformDuration(film.duration)}</span>
     <span class="film-card__genre">${film.genre}</span>
   </p>
   <img src="${film.poster}" alt="${film.filmName}" class="film-card__poster">
-  <p class="film-card__description">${shortDescrption}</p>
+  <p class="film-card__description">${isDescriptionLarge(film.description) ? transformLongDescriptionToShort(film.description) : film.description}</p>
   <a class="film-card__comments">${film.comments.length} comments</a>
   </article>`;
-};
 
 export default class FilmCard extends AbstractComponent {
   constructor(film) {
