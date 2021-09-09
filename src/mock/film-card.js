@@ -122,7 +122,7 @@ const FilmsInfo = {
     const year = `19${getRandomInteger(0, 9)}${getRandomInteger(0, 9)}`;
     return dayjs().date(day).month(month).year(year).format('DD MMMM YYYY');
   },
-  getDuration() { return `${getRandomInteger(1, 2)}h ${getRandomInteger(0, 60)}m`; },
+  getDuration() { return getRandomInteger(65, 140); },
   getDescription() { return this._DESCRIPTION[getRandomInteger(0, this._DESCRIPTION.length - 1)]; },
   getCountry() { return this._COUNTRIES[getRandomInteger(0, this._COUNTRIES.length - 1)]; },
   getAgeLimit() { return this._AGE_LIMITS[getRandomInteger(0, this._AGE_LIMITS.length - 1)]; },
@@ -139,7 +139,7 @@ const genetateFilmCard = () => {
     duration: FilmsInfo.getDuration(),
     genre: FilmsInfo.getGenres()[0],
     description: FilmsInfo.getDescription(),
-    date: FilmsInfo.getDate(),
+    releaseDate: FilmsInfo.getDate(),
     directorName: FilmsInfo.getDirectorName(),
     screenWriters: FilmsInfo.getScreenWriterName(),
     actors: FilmsInfo.getActorsNames(),

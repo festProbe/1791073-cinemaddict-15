@@ -1,10 +1,10 @@
-import {renderElement, RenderPosition} from '../utils/render';
+import { renderElement, RenderPosition } from '../utils/render';
 import FilmDetailsView from '../view/popup-components/popup';
 import PopupControls from '../view/popup-components/popup-controls';
 import PopupComment from '../view/popup-components/comments';
 import NewComment from '../view/popup-components/new-comment-component';
 import { PopupModes } from '../utils/constants';
-
+import dayjs from 'dayjs';
 export default class FilmDetails {
   constructor(changeMode, changeData) {
     this._changeMode = changeMode;
@@ -89,6 +89,7 @@ export default class FilmDetails {
 
   _renderPopupComments() {
     this._film.comments
+      .sort((commentA, commentB) => dayjs(commentB.mailingDate) - dayjs(commentA.mailingDate))
       .forEach((comment) => {
         this._renderPopupComment(comment);
       });
