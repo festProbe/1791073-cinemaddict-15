@@ -10,10 +10,37 @@ const PopupModes = {
   CLOSED: 'closed',
   OPENED: 'opened',
 };
+
+const Emotions = [
+  'smile',
+  'sleeping',
+  'puke',
+  'angry',
+];
+
 const SortTypes = {
   DEFAULT: 'default',
   BY_DATE: 'by-date',
   BY_RATE: 'by-rating',
+};
+
+const UserActions = {
+  UPDATE_FILM: 'UPDATE_FILM',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const FiltersType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITES: 'favorites',
 };
 
 export {
@@ -26,5 +53,9 @@ export {
   FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS,
   SORT_ACTIVE_BUTTON_CLASS,
   PopupModes,
-  SortTypes
+  SortTypes,
+  UserActions,
+  UpdateType,
+  FiltersType,
+  Emotions
 };

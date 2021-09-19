@@ -1,5 +1,5 @@
 import { getRandomFloat, getRandomInteger } from '../utils/common';
-import { isFilmInFavorites, isFilmInHistory, isFilmInWatchlist, isFilmWatched } from '../utils/component';
+import { isFilmInFavorites, isFilmInHistory, isFilmInWatchlist } from '../utils/component';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 import { generateComment } from './comments';
@@ -149,7 +149,6 @@ const genetateFilmCard = () => {
     isInWatchlist: isFilmInWatchlist(),
     isInHistory: isFilmInHistory(),
     isInFavorites: isFilmInFavorites(),
-    isWatched: isFilmWatched(),
     comments: new Array(getRandomInteger(0, 5)).fill('').map(generateComment),
   };
   return filmCard;

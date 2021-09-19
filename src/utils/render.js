@@ -3,6 +3,7 @@ import AbstractComponent from '../view/abstract-component';
 export const RenderPosition = {
   AFTEREEND: 'afterend',
   BEFOREEND: 'beforeend',
+  AFTERBEGIN: 'afterbegin',
 };
 
 export const renderElement = (container, child, place) => {
@@ -15,7 +16,7 @@ export const renderElement = (container, child, place) => {
   }
 
   switch (place) {
-    case RenderPosition.AFTEREEND:
+    case RenderPosition.AFTERBEGIN:
       container.before(child);
       break;
     case RenderPosition.BEFOREEND:
@@ -50,6 +51,9 @@ export const replace = (newChild, oldChild) => {
 };
 
 export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
   if (!(component instanceof AbstractComponent)) {
     throw new Error('Can remove only components');
   }

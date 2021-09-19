@@ -31,7 +31,7 @@ export default class FilmCard extends AbstractComponent {
     this._callback.click();
   }
 
-  setClickHandler(callback) {
+  setShowPopupClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector('.film-card__poster').addEventListener('click', this._clickHandler);
     this.getElement().querySelector('.film-card__title').addEventListener('click', this._clickHandler);

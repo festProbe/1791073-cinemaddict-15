@@ -19,13 +19,12 @@ export default class SortMenu extends AbstractComponent {
   getTemplate() { return createSortMenuTemplate(); }
 
   _sortTypeChangeHandler(evt) {
+    evt.preventDefault();
     if (evt.target.tagName !== 'A') {
       return;
     }
-
-    evt.preventDefault();
-    this.getElement().querySelectorAll('.sort__button').forEach((item) => { item.classList.remove(`${SORT_ACTIVE_BUTTON_CLASS}`); });
-    evt.target.classList.add(`${SORT_ACTIVE_BUTTON_CLASS}`);
+    this.getElement().querySelectorAll('.sort__button').forEach((item) => item.classList.remove(SORT_ACTIVE_BUTTON_CLASS));
+    evt.target.classList.add(SORT_ACTIVE_BUTTON_CLASS);
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 
