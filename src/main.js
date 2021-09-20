@@ -1,25 +1,31 @@
-import { FILM_COUNT } from './utils/constants';
+import { FILM_COUNT, UpdateType } from './utils/constants';
 import { renderElement, RenderPosition } from './utils/render';
 import { genetateFilmCard } from './mock/film-card';
-import { generateFilter } from './mock/filters';
+import FilmsModel from './model/films';
 import ProfileRatingView from './view/main-containers/header';
-import FIltersView from './view/main-containers/navigation-menu';
 import MoviesPresenter from './presenter/movies-list';
-import FilmsStatView from './view/film-card-components/films-count-stat';
+import FilmsStatView from './view/film-card-components/footer-stat';
+import FilterModel from './model/filters';
+import Filter from './presenter/filter';
 
 const films = new Array(FILM_COUNT).fill('').map(genetateFilmCard);
-const filters = generateFilter(films);
+
+const filtersModel = new FilterModel();
+const filmsModel = new FilmsModel();
+filmsModel.setFilms(UpdateType.PATCH, films);
 
 const siteHeaderElement = document.querySelector('.header');
-renderElement(siteHeaderElement, new ProfileRatingView(), RenderPosition.BEFOREEND);
-
 const siteMainElement = document.querySelector('.main');
-renderElement(siteMainElement, new FIltersView(filters), RenderPosition.BEFOREEND);
-
 const footerElement = document.querySelector('.footer');
 
-new MoviesPresenter(siteMainElement, films);
+const watchedFilmsCount = films.filter((film) => film.isInHistory).length;
+renderElement(siteHeaderElement, new ProfileRatingView(watchedFilmsCount), RenderPosition.BEFOREEND);
+
+const moviesPresenter = new MoviesPresenter(siteMainElement, filmsModel, filtersModel);
+const filtersPresenter = new Filter(siteMainElement, filtersModel, filmsModel, moviesPresenter);
+filtersPresenter.init();
+moviesPresenter.init();
 
 const siteFooterStatisticElement = footerElement.querySelector('.footer__statistics');
-renderElement(siteFooterStatisticElement, new FilmsStatView(), RenderPosition.BEFOREEND);
+renderElement(siteFooterStatisticElement, new FilmsStatView(films.length), RenderPosition.BEFOREEND);
 

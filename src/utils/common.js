@@ -22,19 +22,5 @@ export const transformFilmReleaseDateToYear = (releaseDate) => dayjs(releaseDate
 
 export const transformLongDescriptionToShort = (description) => `${description.split('').slice(0, DESCRIPTION_LIMIT).join('')}...`;
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
-export const sortByDate = (filmA, filmB) => dayjs(filmB.date).diff(dayjs(filmA.date));
+export const sortByDate = (filmA, filmB) => dayjs(filmB.releaseDate).diff(dayjs(filmA.releaseDate));
 export const sortByRating = (filmA, filmB) => filmB.rating - filmA.rating;

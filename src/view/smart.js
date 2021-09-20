@@ -3,14 +3,28 @@ import AbstractDefault from './abstract-component';
 export default class Smart extends AbstractDefault {
   constructor() {
     super();
-    this._data = {};
+    this._state = {};
   }
 
-  _restoreHandlers() {
+  updateState (update, isNoReplace = false) {
+    if (!update) {
+      return;
+    }
 
+    this._state = Object.assign(
+      {},
+      this._state,
+      update,
+    );
+
+    if (isNoReplace) {
+      return;
+    }
+
+    this._updateElement();
   }
 
-  updateElement() {
+  _updateElement () {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
     this.removeElement();
@@ -18,20 +32,9 @@ export default class Smart extends AbstractDefault {
     const newElement = this.getElement();
 
     parent.replaceChild(newElement, prevElement);
-    this._restoreHandlers();
+    this.restoreHandlers();
   }
 
-  udpateData(update) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-      {},
-      this._data,
-      update,
-    );
-
-    this.updateElement();
+  restoreHandler () {
   }
 }

@@ -9,8 +9,6 @@ export const isFilmInHistory = () => Boolean(getRandomInteger(0, 1));
 
 export const isFilmInFavorites = () => Boolean(getRandomInteger(0, 1));
 
-export const isFilmWatched = () => Boolean(getRandomInteger(0, 1));
-
 export const isCommentTodayOrYesterday = (daysGap) => {
   switch (daysGap) {
     case 0:

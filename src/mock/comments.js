@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import { getRandomInteger } from '../utils/common';
+import { nanoid } from 'nanoid';
+
 const MAX_COMMENT_DAY_GAP = 7;
 
 const Comment = {
@@ -33,6 +35,7 @@ const Comment = {
     'Harrison Ford',
   ],
 
+  getId() { return nanoid(); },
   getEmoji() { return this._EMOJI[getRandomInteger(0, this._EMOJI.length - 1)]; },
   getCommentText() { return this._COMMENT_TEXT[getRandomInteger(0, this._COMMENT_TEXT.length - 1)]; },
   getAuthorName() { return this._AUTHOR_NAME[getRandomInteger(0, this._AUTHOR_NAME.length - 1)]; },
@@ -45,6 +48,7 @@ const Comment = {
 
 export const generateComment = () => {
   const comment = {
+    id: Comment.getId(),
     emoji: `./images/emoji/${Comment.getEmoji()}`,
     text: Comment.getCommentText(),
     author: Comment.getAuthorName(),
