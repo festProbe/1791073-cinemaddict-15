@@ -7,13 +7,11 @@ import MoviesPresenter from './presenter/movies-list';
 import FilmsStatView from './view/film-card-components/footer-stat';
 import FilterModel from './model/filters';
 import Filter from './presenter/filter';
-import CommentsModel from './model/comments';
 
 const films = new Array(FILM_COUNT).fill('').map(genetateFilmCard);
 
 const filtersModel = new FilterModel();
 const filmsModel = new FilmsModel();
-const commentsModel = new CommentsModel();
 filmsModel.setFilms(UpdateType.PATCH, films);
 
 const siteHeaderElement = document.querySelector('.header');
@@ -23,7 +21,7 @@ const footerElement = document.querySelector('.footer');
 const watchedFilmsCount = films.filter((film) => film.isInHistory).length;
 renderElement(siteHeaderElement, new ProfileRatingView(watchedFilmsCount), RenderPosition.BEFOREEND);
 
-const moviesPresenter = new MoviesPresenter(siteMainElement, filmsModel, filtersModel, commentsModel);
+const moviesPresenter = new MoviesPresenter(siteMainElement, filmsModel, filtersModel);
 const filtersPresenter = new Filter(siteMainElement, filtersModel, filmsModel, moviesPresenter);
 filtersPresenter.init();
 moviesPresenter.init();
