@@ -1,3 +1,4 @@
+import { MenuItems } from '../../utils/constants';
 import AbstractComponent from '../abstract-component';
 
 const generateFilterItemTemlate = (filters, currentFilterType) => {
@@ -5,6 +6,7 @@ const generateFilterItemTemlate = (filters, currentFilterType) => {
 
   return `<a href="#${name}"
   data-type="${type}"
+  data-menu="${MenuItems.FILMS}"
   class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}">${name}
   <span class="main-navigation__item-count">${count}</span></a>`;
 };
@@ -19,7 +21,7 @@ const createNavigationMenuTemplate = (filterItems, currentFilterType) => {
     <div class="main-navigation__items">
       ${filterItemsTemplate}
     </div>
-    <a href="#stats" class="main-navigation__additional">Stats</a>
+    <a href="#stats" class="main-navigation__additional" data-menu="${MenuItems.STATISTIC}">Stats</a>
   </nav>`;
 };
 
@@ -29,20 +31,21 @@ export default class Filters extends AbstractComponent {
     this._filters = filters;
     this._currentFilterType = currentFilterType;
 
-    this._changeFilterHandler = this._changeFilterHandler.bind(this);
+    this._menuClickHandler = this._menuClickHandler.bind(this);
   }
 
   getTemplate() {
     return createNavigationMenuTemplate(this._filters, this._currentFilterType);
   }
 
-  _changeFilterHandler(evt) {
+  _menuClickHandler(evt) {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.dataset.type);
+    this._callback.menuClick(evt.target.dataset.type, evt.target.dataset.menu);
   }
 
-  setFilterTypeChengeHandler(callback) {
-    this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener('click', this._changeFilterHandler);
+
+  setMenuClick(callback) {
+    this._callback.menuClick = callback;
+    this.getElement().querySelectorAll('a').forEach((item) => item.addEventListener('click', this._menuClickHandler));
   }
 }

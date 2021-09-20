@@ -7,7 +7,7 @@ import ShowMoreButton from '../view/film-card-components/show-more-btn';
 import TopRatedFilmsList from '../view/main-containers/top-rated-films-container';
 import MostCommentedFilmsList from '../view/main-containers/most-commented-films-container';
 import { remove, renderElement, RenderPosition } from '../utils/render';
-import { FILM_COUNT_PER_STEP, FiltersType, MOST_COMMENTED_FILM_COUNT, SortTypes, TOP_RATED_FILM_COUNT, UpdateType, UserActions } from '../utils/constants';
+import { FILM_COUNT_PER_STEP, FiltersType, MOST_COMMENTED_FILM_COUNT, SortTypes, SORT_ACTIVE_BUTTON_CLASS, TOP_RATED_FILM_COUNT, UpdateType, UserActions } from '../utils/constants';
 import { sortByDate, sortByRating } from '../utils/common';
 import { filter } from '../utils/filter';
 import EmptyFilmList from '../view/film-card-components/empty-film-list';
@@ -20,8 +20,8 @@ export default class MovieList {
     this._defualtSort = filmsModel;
 
     this._filmContainerComponent = new FilmContainer();
-    this._filmsListComponent = new FilmList();
     this._filmsListContainer = new FilmListContainer();
+    this._filmsListComponent = new FilmList();
     this._topRatedComponent = new TopRatedFilmsList();
     this._topRatedListContainer = new FilmListContainer();
     this._mostCommentedComponent = new MostCommentedFilmsList();
@@ -44,17 +44,13 @@ export default class MovieList {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     //this._handlePopupModeChange = this._handlePopupModeChange.bind(this);
-
-
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
     this._renderFilmsContainer();
-    this._sortComponent = new SortMenu(this._currentSortType);
-    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-    renderElement(this._mainContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   _getFilms() {
@@ -167,7 +163,9 @@ export default class MovieList {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
     }
-
+    this._sortComponent = new SortMenu(this._currentSortType);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+    renderElement(this._mainContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
   _handleSortTypeChange(sortType) {
@@ -178,6 +176,8 @@ export default class MovieList {
     this._currentSortType = sortType;
     this._clearFilmList({ resetRenderedFilmCount: true });
     this._renderFilmsList();
+
+    this._sortComponent.getElement().querySelector(`a[data-sort-type="${sortType}"]`).classList.add(SORT_ACTIVE_BUTTON_CLASS);
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -222,6 +222,7 @@ export default class MovieList {
 
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     remove(this._showMoreButton);
+    remove(this._sortComponent);
 
     if (this._noFilmsComponent) {
       remove(this._noFilmsComponent);
@@ -240,11 +241,19 @@ export default class MovieList {
 
   destroy() {
     this._clearFilmList({ resetRenderedFilmCount: true, resetSortType: true });
-  }
 
-  /*_handlePopupModeChange() {
-    this._filmPresenter.forEach((presenter) => presenter.resetView());
-    this._topRatedFilmPresenter.forEach((presenter) => presenter.resetView());
-    this._mostCommentedFilmPresenter.forEach((presenter) => presenter.resetView());
-  }*/
+    this._topRatedFilmPresenter.forEach((presenter) => presenter.destroy());
+    this._topRatedFilmPresenter.clear();
+    this._mostCommentedFilmPresenter.forEach((presenter) => presenter.destroy());
+    this._mostCommentedFilmPresenter.clear();
+
+    remove(this._sortComponent);
+    remove(this._filmsListContainer);
+    remove(this._filmContainerComponent);
+    remove(this._topRatedListContainer);
+    remove(this._mostCommentedListContainer);
+
+    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
 }
