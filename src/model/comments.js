@@ -20,7 +20,6 @@ export default class Comment extends AbstractObserver {
   }
 
   removeComment(updateType, update) {
-    debugger;
     const index = this._comments.findIndex((comment) => comment.id === update.id);
 
     if (index === -1) {
