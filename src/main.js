@@ -1,27 +1,23 @@
-import { FILM_COUNT, UpdateType } from './utils/constants';
+import { AUTHORIZATION, END_POINT, UpdateType } from './utils/constants';
 import { renderElement, RenderPosition } from './utils/render';
-import { genetateFilmCard } from './mock/film-card';
 import FilmsModel from './model/films';
 import ProfileRatingView from './view/main-containers/header';
 import MoviesPresenter from './presenter/movies-list';
 import FilmsStatView from './view/film-card-components/footer-stat';
 import FilterModel from './model/filters';
 import Filter from './presenter/filter';
+import Api from './api';
 
-
-const films = new Array(FILM_COUNT).fill('').map(genetateFilmCard);
+const api = new Api(END_POINT, AUTHORIZATION);
 
 const filtersModel = new FilterModel();
-const filmsModel = new FilmsModel();
-
-filmsModel.setFilms(UpdateType.PATCH, films);
+const filmsModel = new FilmsModel(api);
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
-const watchedFilmsCount = films.filter((film) => film.isInHistory).length;
-renderElement(siteHeaderElement, new ProfileRatingView(watchedFilmsCount), RenderPosition.BEFOREEND);
+renderElement(siteHeaderElement, new ProfileRatingView(), RenderPosition.BEFOREEND);
 
 const moviesPresenter = new MoviesPresenter(siteMainElement, filmsModel, filtersModel);
 const filtersPresenter = new Filter(siteMainElement, filtersModel, filmsModel, moviesPresenter);
@@ -29,5 +25,12 @@ filtersPresenter.init();
 moviesPresenter.init();
 
 const siteFooterStatisticElement = footerElement.querySelector('.footer__statistics');
-renderElement(siteFooterStatisticElement, new FilmsStatView(films.length), RenderPosition.BEFOREEND);
+renderElement(siteFooterStatisticElement, new FilmsStatView(), RenderPosition.BEFOREEND);
 
+
+api.getFilms().then((films) => {
+  filmsModel.setFilms(UpdateType.INIT, films);
+})
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+  });
