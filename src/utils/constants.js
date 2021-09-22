@@ -4,6 +4,7 @@ const FILM_COUNT_PER_STEP = 5;
 const TOP_RATED_FILM_COUNT = 2;
 const MOST_COMMENTED_FILM_COUNT = 2;
 const BAR_HEIGHT = 50;
+const SHAKE_ANIMATION_TIMEOUT = 600;
 const AUTHORIZATION = 'Basic eo0qw50ik22539a';
 const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 const FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS = 'film-card__controls-item--active';
@@ -43,6 +44,7 @@ const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+  UPDATE_COMMENTS: 'UPDATE_COMMENTS',
 };
 
 const FiltersType = {
@@ -60,6 +62,19 @@ const Periods = {
   YEAR: 'year',
 };
 
+const Methods = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+const SuccessHTTPStatusRange = {
+  MIN: 200,
+  MAX: 299,
+};
+
+
 export {
   DESCRIPTION_LIMIT,
   FILM_COUNT,
@@ -67,6 +82,7 @@ export {
   TOP_RATED_FILM_COUNT,
   MOST_COMMENTED_FILM_COUNT,
   BAR_HEIGHT,
+  SHAKE_ANIMATION_TIMEOUT,
   AUTHORIZATION,
   END_POINT,
   POPUP_ACTIVE_CONTROL_BUTTON_CLASS,
@@ -79,5 +95,7 @@ export {
   FiltersType,
   Emotions,
   MenuItems,
-  Periods
+  Periods,
+  Methods,
+  SuccessHTTPStatusRange
 };

@@ -4,7 +4,6 @@ import { transformDuration } from '../../utils/common';
 import { Emotions, POPUP_ACTIVE_CONTROL_BUTTON_CLASS } from '../../utils/constants';
 import he from 'he';
 import SmartView from '../smart';
-import { nanoid } from 'nanoid';
 
 dayjs.extend(relativeTime);
 
@@ -14,7 +13,7 @@ const createCommentElement = (comments) => {
   let template = '';
   comments.forEach((comment) => template += `<li class="film-details__comment" id="${comment.id}">
   <span span class="film-details__comment-emoji">
-   <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-sleeping">
+   <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-sleeping" >
   </span>
   <div>
    <p class="film-details__comment-text">${comment.comment}</p>
@@ -155,6 +154,8 @@ export default class FilmDetails extends SmartView {
     this._commentTextAreaHandler = this._commentTextAreaHandler.bind(this);
     this._onDeleteCommentClick = this._onDeleteCommentClick.bind(this);
     this._onSubmitEnterNewComment = this._onSubmitEnterNewComment.bind(this);
+    this._handleIsCommentAdded = this._handleIsCommentAdded.bind(this);
+    this._handleIsDeleted = this._handleIsDeleted.bind(this);
 
     this.setInnerHandlers();
 
@@ -210,12 +211,28 @@ export default class FilmDetails extends SmartView {
     closeBtn.addEventListener('click', this._closeDetailsClickHandler);
   }
 
+  _handleIsCommentAdded(newComments) {
+    const scrollTopPosition = this.getElement().scrollTop;
+    this.updateState({ comments: newComments });
+    document.querySelector('.film-details').scrollTop = scrollTopPosition;
+    this.getElement().querySelector('.film-details__comment-input').disabled = false;
+    this.getElement().querySelector('.film-details__emoji-item').disabled = false;
+  }
+
+  _handleIsDeleted() {
+    const scrollTopPosition = this.getElement().scrollTop;
+    this.reset();
+    document.querySelector('.film-details').scrollTop = scrollTopPosition;
+    this.getElement().querySelectorAll('.film-details__comment-delete')
+      .forEach((button) => button.disabled = false);
+  }
+
   _emotionClickHandler(evt) {
     evt.preventDefault();
-    this._scrollPosition = this.getElement().scrollTop;
 
+    const scrollTopPosition = this.getElement().scrollTop;
     this.updateState({ emotion: evt.target.value });
-    this.getElement().scrollTop = this._scrollPosition;
+    this.getElement().scrollTop = scrollTopPosition;
 
     const emojiItems = this.getElement().querySelectorAll('.film-details__emoji-item');
 
@@ -228,11 +245,12 @@ export default class FilmDetails extends SmartView {
 
   _onSubmitEnterNewComment(evt) {
     if (evt.key === 'Enter' && evt.ctrlKey) {
-      this._state = this._createNewComment();
+      evt.preventDefault();
+      this.getElement().querySelector('.film-details__comment-input').disabled = true;
+      this.getElement().querySelector('.film-details__emoji-item').disabled = true;
+      const comment = this._createNewComment();
       const scrollTopPosition = this.getElement().scrollTop;
-
-      this._callback.onSubmitNewComment(this._state);
-
+      this._callback.onSubmitNewComment(comment, this._handleIsCommentAdded);
       document.querySelector('.film-details').scrollTop = scrollTopPosition;
     }
   }
@@ -246,11 +264,8 @@ export default class FilmDetails extends SmartView {
     }
 
     const newComment = {
-      id: nanoid(),
-      emoji: `./images/emoji/${this._state.emotion}.png`,
-      text: this._state.commentText,
-      author: 'Vasya',
-      mailingDate: dayjs(),
+      emotion: this._state.emotion,
+      comment: this._state.commentText,
     };
 
     this._state.comments.push(newComment);
@@ -258,19 +273,18 @@ export default class FilmDetails extends SmartView {
     this._state.commentText = null;
     this._state.emotion = null;
 
-    return this._state;
+
+    return newComment;
   }
 
   _onDeleteCommentClick(evt) {
     evt.preventDefault();
+    evt.target.disabled = true;
+    evt.target.textContent = 'Deleting...';
     const scrollTopPosition = this.getElement().scrollTop;
-
     const targetId = evt.target.closest('.film-details__comment').id;
-
     this._state.comments = this._state.comments.filter((comment) => comment.id !== targetId);
-
-    this._callback.onDeleteClick(FilmDetails.parseDataToFilm(this._state));
-
+    this._callback.onDeleteClick(targetId, this._handleIsDeleted);
     document.querySelector('.film-details').scrollTop = scrollTopPosition;
   }
 
