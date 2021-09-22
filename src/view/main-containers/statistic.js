@@ -2,42 +2,61 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { calculateMaxCountGenre, getGenresStatistic } from '../../utils/common';
+import { getStatistic } from '../../utils/common';
 import { BAR_HEIGHT, Periods } from '../../utils/constants';
 import Smart from '../smart';
 dayjs.extend(duration);
 
-const createStatsOfTimeTemplate = () => {
+const createStatsOfTimeTemplate = (currentPeriod) => {
   let temlate = '';
   Object.values(Periods).forEach((item) => temlate += `
   <input type="radio"
    class="statistic__filters-input visually-hidden"
     name="statistic-filter"
      id="statistic-${item}"
-      value="${item}" checked>
+      value="${item}" ${currentPeriod === item ? 'checked' : ''}>
   <label for="statistic-${item}" class="statistic__filters-label">${item}</label>
   `);
   return temlate;
 };
 
-const calculateDuration = (state) => {
-  const watchedFilms = state.films.filter((film) => film.isInHistory);
+const calculateDuration = (films) => {
   let watchedFilmsDuration = 0;
-  watchedFilms.map((film) => watchedFilmsDuration += film.duration);
-  return watchedFilmsDuration;
+  films.forEach((film) => watchedFilmsDuration += film.filmInfo.runTime);
+  return `${Math.floor(dayjs.duration(watchedFilmsDuration, 'minutes').asHours())} <span class="statistic__item-description">h</span> ${watchedFilmsDuration - Math.floor(dayjs.duration(watchedFilmsDuration, 'minutes').asHours()) * 60} <span span class="statistic__item-description"> m</span>`;
+};
+
+const calculateStats = (state) => {
+  const statsField = getStatistic(state);
+
+  return `<ul class="statistic__text-list">
+  <li class="statistic__text-item">
+    <h4 class="statistic__item-title">You watched</h4>
+    <p class="statistic__item-text">${statsField.currentWatchedFilmsCount} <span class="statistic__item-description"> movies</span></p>
+  </li >
+  <li class="statistic__text-item">
+    <h4 class="statistic__item-title">Total duration</h4>
+    <p class="statistic__item-text"> ${calculateDuration(statsField.watchedFilmsByPeriod)}    </p >
+  </li >
+<li class="statistic__text-item">
+  <h4 class="statistic__item-title">Top genre</h4>
+  <p class="statistic__item-text">${statsField.topGenre}</p>
+</li>
+</ul>`;
 };
 
 const renderChart = (container, state) => {
-  // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
-  container.height = BAR_HEIGHT * 5;
+  const statistic = getStatistic(state);
+
+  container.height = BAR_HEIGHT * 9;
 
   return new Chart(container, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: Object.keys(getGenresStatistic(state)),
+      labels: Object.keys(statistic.genresStats),
       datasets: [{
-        data: Object.values(getGenresStatistic(state)),
+        data: Object.values(statistic.genresStats),
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -89,9 +108,7 @@ const renderChart = (container, state) => {
   });
 };
 
-const createStatisticTemplate = (state, userRank) => {
-  const { films } = state;
-  return `<section class="statistic">
+const createStatisticTemplate = (state, userRank) => `<section class="statistic">
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
@@ -100,30 +117,16 @@ const createStatisticTemplate = (state, userRank) => {
 
   <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
     <p class="statistic__filters-description">Show stats:</p>
-    ${createStatsOfTimeTemplate()}
+    ${createStatsOfTimeTemplate(state.currentPeriod)}
   </form>
 
-  <ul class="statistic__text-list">
-    <li class="statistic__text-item">
-      <h4 class="statistic__item-title">You watched</h4>
-      <p class="statistic__item-text">${films.filter((film) => film.isInHistory).length} <span class="statistic__item-description"> movies</span></p>
-    </li >
-    <li class="statistic__text-item">
-      <h4 class="statistic__item-title">Total duration</h4>
-      <p class="statistic__item-text">${dayjs.duration(calculateDuration(state), 'minutes').hours()} <span class="statistic__item-description">h</span> ${dayjs.duration(calculateDuration(state), 'minutes').minutes()} <span span class="statistic__item-description" > m</span></p >
-    </li >
-  <li class="statistic__text-item">
-    <h4 class="statistic__item-title">Top genre</h4>
-    <p class="statistic__item-text">${calculateMaxCountGenre(getGenresStatistic(state))}</p>
-  </li>
-  </ul >
+  ${calculateStats(state)}
 
   <div class="statistic__chart-wrap">
     <canvas class="statistic__chart" width="1000"></canvas>
   </div>
 
   </section > `;
-};
 
 export default class Statistic extends Smart {
   constructor(films) {
@@ -138,16 +141,11 @@ export default class Statistic extends Smart {
     this._genresChart = null;
 
     this._onStatisticPeriods = this._onStatisticPeriods.bind(this);
-    this._setInnerHandlers();
+    this._setPeriodChangeClickHandler();
     this._drawChart();
   }
 
   getTemplate() { return createStatisticTemplate(this._state, this._userRank); }
-
-  _setInnerHandlers() {
-    this.getElement().querySelectorAll('.statistic__filters-input')
-      .forEach((input) => input.addEventListener('click', this._onClickStatisticsBtn));
-  }
 
   _drawChart() {
     if (this._genresChart !== null) {
@@ -159,7 +157,7 @@ export default class Statistic extends Smart {
   }
 
   _onStatisticPeriods(evt) {
-    if (evt.target.value === this._state.currentInput) {
+    if (evt.target.value === this._state.currentPeriod) {
       return;
     }
 
@@ -169,14 +167,19 @@ export default class Statistic extends Smart {
           const typeOfTime = evt.target.value;
           return dayjs().subtract(1, typeOfTime).toDate();
         })(),
-        currentInput: evt.target.value,
+        currentPeriod: evt.target.value,
       },
     );
   }
 
-  restoreAllHandlers() {
+  _setPeriodChangeClickHandler() {
+    this.getElement().querySelectorAll('.statistic__filters-input')
+      .forEach((item) => item.addEventListener('change', this._onStatisticPeriods));
+  }
+
+  restoreHandlers() {
     this._drawChart();
-    this._setInnerHandlers();
+    this._setPeriodChangeClickHandler();
   }
 
   removeElement() {

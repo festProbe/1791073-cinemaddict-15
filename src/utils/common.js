@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { DESCRIPTION_LIMIT } from './constants';
+import { DESCRIPTION_LIMIT, Periods } from './constants';
 
 export const getRandomFloat = (min, max) => {
   const rand = Math.random() * (max - min + 0.1);
@@ -22,34 +22,11 @@ export const transformFilmReleaseDateToYear = (releaseDate) => dayjs(releaseDate
 
 export const transformLongDescriptionToShort = (description) => `${description.split('').slice(0, DESCRIPTION_LIMIT).join('')}...`;
 
-export const sortByDate = (filmA, filmB) => dayjs(filmB.releaseDate).diff(dayjs(filmA.releaseDate));
-export const sortByRating = (filmA, filmB) => filmB.rating - filmA.rating;
+export const sortByDate = (filmA, filmB) => dayjs(filmB.filmInfo.release.date).diff(dayjs(filmA.filmInfo.release.date));
+export const sortByRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
 
-export const getGenresStatistic = (state) => {
-  const GenresStatistic = {
-    'Musical': 0,
-    'Western': 0,
-    'Drama': 0,
-    'Cartoon': 0,
-    'Comedy': 0,
-  };
-  state.films.forEach((film) => {
-    for (const value of film.genres) {
-      switch (value) {
-        case 'Musical': GenresStatistic.Musical += 1; break;
-        case 'Western': GenresStatistic.Western += 1; break;
-        case 'Drama': GenresStatistic.Drama += 1; break;
-        case 'Cartoon': GenresStatistic.Cartoon += 1; break;
-        case 'Comedy': GenresStatistic.Comedy += 1; break;
-      }
-    }
-  });
-
-  return GenresStatistic;
-};
-
-/*const changeStatisticByPeriod = (films, dateFrom, dateTo, currentInput) => {
-  switch (currentInput) {
+const changeStatisticByPeriod = (films, dateTo, currentPeriod) => {
+  switch (currentPeriod) {
     case Periods.ALL_TIME:
       return films;
     case Periods.TODAY:
@@ -61,6 +38,39 @@ export const getGenresStatistic = (state) => {
     case Periods.YEAR:
       return films.filter((film) => dayjs(film.userDetails.watchingDate).isSame(dateTo, 'year'));
   }
-};*/
+};
 
-export const calculateMaxCountGenre = (GenresStatistic) => Object.keys(GenresStatistic).find((key) => GenresStatistic[key] === Math.max(GenresStatistic.Musical, GenresStatistic.Western, GenresStatistic.Drama, GenresStatistic.Comedy, GenresStatistic.Cartoon));
+export const getStatistic = (state) => {
+  const watchedFilmsByPeriod = changeStatisticByPeriod(state.films, state.dateTo, state.currentPeriod);
+  const currentWatchedFilmsCount = watchedFilmsByPeriod.length;
+  const uniqueGenres = new Map();
+
+  for (const film of watchedFilmsByPeriod) {
+    for (const genre of film.filmInfo.genre) {
+      uniqueGenres.set(genre, 0);
+    }
+  }
+  const GenresStatistic = Object.fromEntries(uniqueGenres);
+
+  watchedFilmsByPeriod.forEach((film) => {
+    for (const value of film.filmInfo.genre) {
+      if (Object.keys(GenresStatistic).includes(value)) {
+        GenresStatistic[value] += 1;
+      }
+    }
+  });
+
+  const sortedGenresCount = Object.entries(GenresStatistic)
+    .sort(([, a], [, b]) => b - a)
+    .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+
+  return Object.assign(
+    {},
+    {
+      genresStats: sortedGenresCount,
+      currentWatchedFilmsCount,
+      topGenre: Object.keys(sortedGenresCount)[0],
+      watchedFilmsByPeriod,
+    },
+  );
+};

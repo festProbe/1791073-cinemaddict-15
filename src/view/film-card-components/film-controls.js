@@ -2,23 +2,11 @@ import AbstractComponent from '../abstract-component';
 import { FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS } from '../../utils/constants';
 
 export const createControlsTemplate = (film) => {
-  let inWatchlistButtonActive = '';
-  if (film.isInWatchlist) {
-    inWatchlistButtonActive = FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS;
-  }
-  let inHistoryButtonActive;
-  if (film.isInHistory) {
-    inHistoryButtonActive = FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS;
-  }
-  let inFavoriteButtonActive;
-  if (film.isInFavorites) {
-    inFavoriteButtonActive = FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS;
-  }
-
+  const { isWatchlist, isAlreadyWatched, isFavorite } = film.userDetails;
   return `<div class="film-card__controls">
-  <button class="${inWatchlistButtonActive} film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-  <button class="${inHistoryButtonActive} film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-  <button class="${inFavoriteButtonActive} film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
+  <button class="${isWatchlist ? FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS : ''} film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
+  <button class="${isAlreadyWatched ? FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS : ''} film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
+  <button class="${isFavorite ? FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS : ''} film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
 </div>`;
 };
 

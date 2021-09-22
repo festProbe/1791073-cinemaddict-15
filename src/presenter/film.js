@@ -8,10 +8,11 @@ import AbstractObserver from '../utils/abstract-observer';
 const observer = new AbstractObserver();
 
 export default class filmCard {
-  constructor(container, changeData, currentFilterType) {
+  constructor(container, changeData, currentFilterType, api) {
     this._container = container;
     this._changeData = changeData;
     this._currentFilterType = currentFilterType;
+    this._api = api;
 
     this._body = document.querySelector('body');
 
@@ -74,20 +75,27 @@ export default class filmCard {
 
   _renderPopup() {
     observer._notify(this._destroyPopup);
-    this._popup = new FilmDetailsView(this._film);
 
-    this._popup.setInWatchlistClickHandler(this._handleToWatchlist);
-    this._popup.setInWatchedClickHandler(this._handleToHistory);
-    this._popup.setInFavoritesClickHandler(this._handleToFavorites);
-    this._popup.setOnDeleteCommentClick(this._handleDeleteCommentClick);
-    this._popup.setSubmitNewComment(this._handleSubmitNewComment);
+    this._api.getComments(this._film)
+      .then((comments) => {
+        this._film.comments = comments;
 
-    this._body.classList.add('hide-overflow');
-    document.addEventListener('keydown', this._onEscClosePopup);
-    renderElement(this._body, this._popup, RenderPosition.BEFOREEND);
+        this._popup = new FilmDetailsView(this._film);
+        this._popup.setInWatchlistClickHandler(this._handleToWatchlist);
+        this._popup.setInWatchedClickHandler(this._handleToHistory);
+        this._popup.setInFavoritesClickHandler(this._handleToFavorites);
+        this._popup.setOnDeleteCommentClick(this._handleDeleteCommentClick);
+        this._popup.setSubmitNewComment(this._handleSubmitNewComment);
 
-    this._popup.setCloseDetailsClickHandler(this._destroyPopup);
-    //this._popup.reset();
+        this._body.classList.add('hide-overflow');
+        document.addEventListener('keydown', this._onEscClosePopup);
+        renderElement(this._body, this._popup, RenderPosition.BEFOREEND);
+
+        this._popup.setCloseDetailsClickHandler(this._destroyPopup);
+      })
+      .catch(() => {
+        throw new Error('Невозможно загрузить комментарии, попробуйте позже.');
+      });
   }
 
   _destroyPopup() {
@@ -106,45 +114,27 @@ export default class filmCard {
   }
 
   _handleToWatchlist() {
+    const userDetails = Object.assign({}, this._film.userDetails, { isWatchlist: !this._film.userDetails.isWatchlist });
     this._changeData(
       UserActions.UPDATE_FILM,
       this._currentFilterType === FiltersType.WATCHLIST ? UpdateType.MINOR : UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._film,
-        {
-          isInWatchlist: !this._film.isInWatchlist,
-        },
-      ),
-    );
+      Object.assign({}, this._film, { userDetails }));
   }
 
   _handleToHistory() {
+    const userDetails = Object.assign({}, this._film.userDetails, { isAlreadyWatched: !this._film.userDetails.isAlreadyWatched });
     this._changeData(
       UserActions.UPDATE_FILM,
       this._currentFilterType === FiltersType.HISTORY ? UpdateType.MINOR : UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._film,
-        {
-          isInHistory: !this._film.isInHistory,
-        },
-      ),
-    );
+      Object.assign({}, this._film, { userDetails }));
   }
 
   _handleToFavorites() {
+    const userDetails = Object.assign({}, this._film.userDetails, { isFavorite: !this._film.userDetails.isFavorite });
     this._changeData(
       UserActions.UPDATE_FILM,
       this._currentFilterType === FiltersType.FAVORITES ? UpdateType.MINOR : UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._film,
-        {
-          isInFavorites: !this._film.isInFavorites,
-        },
-      ),
-    );
+      Object.assign({}, this._film, { userDetails }));
   }
 
   _handleDeleteCommentClick(card) {
