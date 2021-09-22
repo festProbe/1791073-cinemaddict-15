@@ -1,11 +1,9 @@
 import AbstractObserver from '../utils/abstract-observer';
 
 export default class filmsModel extends AbstractObserver {
-  constructor(api) {
+  constructor() {
     super();
     this._films = [];
-    this._api = api;
-
   }
 
   setFilms(updateType, films) {

@@ -3,7 +3,7 @@ import AbstractComponent from '../abstract-component';
 import { transformDuration, transformFilmReleaseDateToYear, transformLongDescriptionToShort } from '../../utils/common';
 
 const createFilmCardsTemplate = (film) => {
-  const { title, totalRating, runTime, genre, poster, description, comments } = film.filmInfo;
+  const { title, totalRating, runTime, genre, poster, description } = film.filmInfo;
   const { date } = film.filmInfo.release;
   return `<article class="film-card ">
 <h3 class="film-card__title">${title}</h3>
@@ -11,11 +11,11 @@ const createFilmCardsTemplate = (film) => {
 <p class="film-card__info">
   <span class="film-card__year">${transformFilmReleaseDateToYear(date)}</span>
   <span class="film-card__duration">${transformDuration(runTime)}</span>
-  <span class="film-card__genre">${genre}</span>
+  <span class="film-card__genre">${genre[0]}</span>
 </p>
 <img src="${poster}" alt="${title}" class="film-card__poster">
-<p class="film-card__description">${isDescriptionLarge(description) ? transformLongDescriptionToShort(film.description) : film.description}</p>
-<a class="film-card__comments">${comments.length} comments</a>
+<p class="film-card__description">${isDescriptionLarge(description) ? transformLongDescriptionToShort(description) : description}</p>
+<a class="film-card__comments">${film.comments.length} comments</a>
 </article>`;
 };
 

@@ -1,7 +1,7 @@
 import { FiltersType, MenuItems, UpdateType } from '../utils/constants';
 import { remove, renderElement, RenderPosition, replace } from '../utils/render';
 import FilterView from '../view/main-containers/filters';
-import { filter } from '../utils/filter';
+import { Filters } from '../utils/filter';
 import Statistic from '../view/main-containers/statistic';
 
 export default class Filter {
@@ -31,7 +31,7 @@ export default class Filter {
     this._filterComponent.setMenuClick(this._handleSiteMenuClick);
 
     if (prevFilterComponent === null) {
-      renderElement(this._container, this._filterComponent, RenderPosition.AFTERBEGIN);
+      renderElement(this._container, this._filterComponent, RenderPosition.BEFOREEND);
       return;
     }
 
@@ -45,22 +45,22 @@ export default class Filter {
       {
         type: FiltersType.ALL,
         name: 'All movies',
-        count: filter[FiltersType.ALL](films).length,
+        count: Filters[FiltersType.ALL](films).length,
       },
       {
         type: FiltersType.WATCHLIST,
         name: 'Watchlist',
-        count: filter[FiltersType.WATCHLIST](films).length,
+        count: Filters[FiltersType.WATCHLIST](films).length,
       },
       {
         type: FiltersType.HISTORY,
         name: 'History',
-        count: filter[FiltersType.HISTORY](films).length,
+        count: Filters[FiltersType.HISTORY](films).length,
       },
       {
         type: FiltersType.FAVORITES,
         name: 'Favorites',
-        count: filter[FiltersType.FAVORITES](films).length,
+        count: Filters[FiltersType.FAVORITES](films).length,
       },
     ];
   }

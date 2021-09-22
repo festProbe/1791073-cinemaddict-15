@@ -14,13 +14,13 @@ const createCommentElement = (comments) => {
   let template = '';
   comments.forEach((comment) => template += `<li class="film-details__comment" id="${comment.id}">
   <span span class="film-details__comment-emoji">
-   <img src="${comment.emoji}" width="55" height="55" alt="emoji-sleeping">
+   <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-sleeping">
   </span>
   <div>
-   <p class="film-details__comment-text">${comment.text}</p>
+   <p class="film-details__comment-text">${comment.comment}</p>
    <p class="film-details__comment-info">
      <span class="film-details__comment-author">${comment.author}</span>
-     <span class="film-details__comment-day">${dayjs().diff(comment.mailingDate) > 2 ? dayjs(comment.mailingDate).fromNow() : comment.mailingDate}</span>
+     <span class="film-details__comment-day">${dayjs().diff(comment.date) > 2 ? dayjs(comment.date).fromNow() : comment.date}</span>
      <button class="film-details__comment-delete">Delete</button>
    </p>
   </div>
@@ -40,13 +40,13 @@ const createPopupControlsTemplate = (state) => {
 const createEmojiElement = () => {
   let template = '';
 
-  Emotions.forEach((emoji) => template += `<input class="film-details__emoji-item visually-hidden"
+  Emotions.forEach((emotion) => template += `<input class="film-details__emoji-item visually-hidden"
     name="comment-emoji"
     type="radio"
-    id="emoji-${emoji}"
-    value="${emoji}">
-    <label class="film-details__emoji-label" for="emoji-${emoji}">
-      <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji ${emoji}">
+    id="emoji-${emotion}"
+    value="${emotion}">
+    <label class="film-details__emoji-label" for="emoji-${emotion}">
+      <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji ${emotion}">
     </label>`);
   return template;
 };

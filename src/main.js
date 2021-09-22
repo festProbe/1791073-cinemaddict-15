@@ -11,26 +11,28 @@ import Api from './api';
 const api = new Api(END_POINT, AUTHORIZATION);
 
 const filtersModel = new FilterModel();
-const filmsModel = new FilmsModel(api);
+const filmsModel = new FilmsModel();
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
-renderElement(siteHeaderElement, new ProfileRatingView(), RenderPosition.BEFOREEND);
-
-const moviesPresenter = new MoviesPresenter(siteMainElement, filmsModel, filtersModel);
+const moviesPresenter = new MoviesPresenter(siteMainElement, filmsModel, filtersModel, api);
 const filtersPresenter = new Filter(siteMainElement, filtersModel, filmsModel, moviesPresenter);
+
+const siteFooterStatisticElement = footerElement.querySelector('.footer__statistics');
+
 filtersPresenter.init();
 moviesPresenter.init();
 
-const siteFooterStatisticElement = footerElement.querySelector('.footer__statistics');
-renderElement(siteFooterStatisticElement, new FilmsStatView(), RenderPosition.BEFOREEND);
-
-
-api.getFilms().then((films) => {
-  filmsModel.setFilms(UpdateType.INIT, films);
-})
-  .catch(() => {
+api.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+    const watchedFilms = filmsModel.getFilms().filter((film) => film.userDetails.isAlreadyWatched).length;
+    renderElement(siteHeaderElement, new ProfileRatingView(watchedFilms), RenderPosition.BEFOREEND);
+    renderElement(siteFooterStatisticElement, new FilmsStatView(filmsModel.getFilms().length), RenderPosition.BEFOREEND);
+  })
+  .catch((error) => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    throw new Error(error);
   });
