@@ -8,6 +8,7 @@ import FilterModel from './model/filters';
 import Filter from './presenter/filter';
 import Api from './api';
 
+
 const api = new Api(END_POINT, AUTHORIZATION);
 
 const filtersModel = new FilterModel();
@@ -18,6 +19,7 @@ const siteMainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
 const moviesPresenter = new MoviesPresenter(siteMainElement, filmsModel, filtersModel, api);
+
 const filtersPresenter = new Filter(siteMainElement, filtersModel, filmsModel, moviesPresenter);
 
 const siteFooterStatisticElement = footerElement.querySelector('.footer__statistics');
