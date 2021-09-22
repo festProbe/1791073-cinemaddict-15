@@ -1,15 +1,5 @@
 import FilmsModel from './model/films';
-
-const Method = {
-  GET: 'GET',
-  PUT: 'PUT',
-};
-
-const SuccessHTTPStatusRange = {
-  MIN: 200,
-  MAX: 299,
-};
-
+import { Methods, SuccessHTTPStatusRange } from './utils/constants';
 export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
@@ -27,10 +17,28 @@ export default class Api {
       .then(Api.toJSON);
   }
 
+  addComment(film, comment) {
+    return this._load({
+      url: `comments/${film.id}`,
+      method: Methods.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+      .then(Api.toJSON);
+  }
+
+  deleteComment(commentId) {
+    return this._load({
+      url: `comments/${commentId}`,
+      method: Methods.DELETE,
+    });
+  }
+
+
   updateFilm(film) {
     return this._load({
       url: `films/${film.id}`,
-      method: Method.PUT,
+      method: Methods.PUT,
       body: JSON.stringify(FilmsModel.adaptToServer(film)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
@@ -40,8 +48,7 @@ export default class Api {
 
   _load({
     url,
-    //mode = 'no-cors',
-    method = Method.GET,
+    method = Methods.GET,
     body = null,
     headers = new Headers(),
   }) {

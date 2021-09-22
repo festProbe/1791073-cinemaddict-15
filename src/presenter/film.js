@@ -4,6 +4,7 @@ import FilmDetailsView from '../view/film-card-components/popup';
 import { renderElement, RenderPosition, replace, remove } from '../utils/render';
 import { FiltersType, UpdateType, UserActions } from '../utils/constants';
 import AbstractObserver from '../utils/abstract-observer';
+//import CommentsModel from '../model/comments';
 
 const observer = new AbstractObserver();
 
@@ -19,6 +20,7 @@ export default class filmCard {
     this._filmCard = null;
     this._filmControls = null;
     this._popup = null;
+    //this._commentsModel = null;
     this._film = null;
 
     this._renderPopup = this._renderPopup.bind(this);
@@ -28,7 +30,10 @@ export default class filmCard {
     this._handleToHistory = this._handleToHistory.bind(this);
     this._handleToFavorites = this._handleToFavorites.bind(this);
     this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
-    this._handleSubmitNewComment = this._handleSubmitNewComment.bind(this);
+    this._handleToSubmitNewComment = this._handleToSubmitNewComment.bind(this);
+
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
   }
 
   init(film) {
@@ -85,7 +90,7 @@ export default class filmCard {
         this._popup.setInWatchedClickHandler(this._handleToHistory);
         this._popup.setInFavoritesClickHandler(this._handleToFavorites);
         this._popup.setOnDeleteCommentClick(this._handleDeleteCommentClick);
-        this._popup.setSubmitNewComment(this._handleSubmitNewComment);
+        this._popup.setSubmitNewComment(this._handleToSubmitNewComment);
 
         this._body.classList.add('hide-overflow');
         document.addEventListener('keydown', this._onEscClosePopup);
@@ -96,6 +101,14 @@ export default class filmCard {
       .catch(() => {
         throw new Error('Невозможно загрузить комментарии, попробуйте позже.');
       });
+  }
+
+  _deletingError(commentId) {
+    for (const comment of this._films.comments) {
+      if (comment.id === commentId) {
+        comment.shake();
+      }
+    }
   }
 
   _destroyPopup() {
@@ -111,6 +124,53 @@ export default class filmCard {
       evt.preventDefault();
       this._destroyPopup();
     }
+  }
+
+  _handleModelEvent(updateType) {
+    switch (updateType) {
+      case UpdateType.UPDATE_COMMENTS:
+        this._destroyPopup();
+        this._renderPopup();
+    }
+  }
+
+  _handleViewAction(commentActionType, comment, readyHandler, film) {
+    switch (commentActionType) {
+      case UserActions.ADD_COMMENT:
+        this._api.addComment(film, comment)
+          .then(({ comments }) => {
+            readyHandler(comments);
+          })
+          .catch(() => {
+            this._popup.shake(this._popup.getElement().querySelector('.film-details__new-comment'));
+          });
+        break;
+      case UserActions.DELETE_COMMENT:
+        this._api.deleteComment(comment).then(() => {
+          readyHandler();
+        })
+          .catch(() => {
+            this._popup.shake(this._popup.getElement().querySelector(`#${comment}`));
+          });
+        break;
+    }
+  }
+
+  _handleDeleteCommentClick(comment, readyHandler) {
+    this._handleViewAction(
+      UserActions.DELETE_COMMENT,
+      comment,
+      readyHandler,
+    );
+  }
+
+  _handleToSubmitNewComment(comment, readyHandler) {
+    this._handleViewAction(
+      UserActions.ADD_COMMENT,
+      comment,
+      readyHandler,
+      this._film,
+    );
   }
 
   _handleToWatchlist() {
@@ -137,26 +197,9 @@ export default class filmCard {
       Object.assign({}, this._film, { userDetails }));
   }
 
-  _handleDeleteCommentClick(card) {
-    this._changeData(
-      UserActions.UPDATE_FILM,
-      UpdateType.PATCH,
-      card,
-    );
-  }
-
-  _handleSubmitNewComment(card) {
-    this._changeData(
-      UserActions.UPDATE_FILM,
-      UpdateType.PATCH,
-      card,
-    );
-  }
-
   destroy() {
     remove(this._filmCard);
     remove(this._filmControls);
     remove(this._popup);
   }
-
 }
