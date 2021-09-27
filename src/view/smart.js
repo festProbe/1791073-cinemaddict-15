@@ -1,4 +1,4 @@
-import AbstractDefault from './abstract-component';
+import AbstractDefault from './abstract-default';
 
 export default class Smart extends AbstractDefault {
   constructor() {
@@ -6,7 +6,7 @@ export default class Smart extends AbstractDefault {
     this._state = {};
   }
 
-  updateState (update, isNoReplace = false) {
+  updateState(update, isNoReplace = false) {
     if (!update) {
       return;
     }
@@ -24,7 +24,10 @@ export default class Smart extends AbstractDefault {
     this._updateElement();
   }
 
-  _updateElement () {
+  restoreHandler() {
+  }
+
+  _updateElement() {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
     this.removeElement();
@@ -33,8 +36,5 @@ export default class Smart extends AbstractDefault {
 
     parent.replaceChild(newElement, prevElement);
     this.restoreHandlers();
-  }
-
-  restoreHandler () {
   }
 }

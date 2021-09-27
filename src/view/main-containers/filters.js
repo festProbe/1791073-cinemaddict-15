@@ -1,5 +1,5 @@
 import { MenuItems } from '../../utils/constants';
-import AbstractComponent from '../abstract-component';
+import AbstractComponent from '../abstract-default';
 
 const generateFilterItemTemlate = (filters, currentFilterType) => {
   const { type, name, count } = filters;
@@ -38,14 +38,13 @@ export default class Filters extends AbstractComponent {
     return createNavigationMenuTemplate(this._filters, this._currentFilterType);
   }
 
-  _menuClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.menuClick(evt.target.dataset.type, evt.target.dataset.menu);
-  }
-
-
   setMenuClick(callback) {
     this._callback.menuClick = callback;
     this.getElement().querySelectorAll('a').forEach((item) => item.addEventListener('click', this._menuClickHandler));
+  }
+
+  _menuClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.menuClick(evt.target.dataset.type, evt.target.dataset.menu);
   }
 }

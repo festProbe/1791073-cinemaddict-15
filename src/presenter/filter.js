@@ -1,8 +1,9 @@
 import { FiltersType, MenuItems, UpdateType } from '../utils/constants';
 import { remove, renderElement, RenderPosition, replace } from '../utils/render';
+import ProfileRatingView from '../view/main-containers/profile-rating';
 import FilterView from '../view/main-containers/filters';
-import { Filters } from '../utils/filter';
 import Statistic from '../view/main-containers/statistic';
+import { Filters } from '../utils/filter';
 
 export default class Filter {
   constructor(container, filterModel, filmsModel, moviesPresenter, setClickMenuHandler) {
@@ -12,9 +13,14 @@ export default class Filter {
     this._moviesPresenter = moviesPresenter;
     this._setClickMenuHandler = setClickMenuHandler;
 
+    this._profileRankComponent = null;
     this._filterComponent = null;
     this._statisticComponent = null;
+    this._films = null;
     this._currentMenuItem = MenuItems.FILMS;
+
+    this._prevFilterComponent = null;
+    this._prevProfileRankComponent = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
@@ -24,43 +30,51 @@ export default class Filter {
   }
 
   init() {
+    this._films = this._filmsModel.getFilms();
     const filters = this._getFilter();
-    const prevFilterComponent = this._filterComponent;
+    const watchedFilms = this._films.filter((film) => film.userDetails.isAlreadyWatched).length;
+
+    this._prevFilterComponent = this._filterComponent;
+    this._prevProfileRankComponent = this._profileRankComponent;
 
     this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
+    this._profileRankComponent = new ProfileRatingView(watchedFilms);
     this._filterComponent.setMenuClick(this._handleSiteMenuClick);
 
-    if (prevFilterComponent === null) {
-      renderElement(this._container, this._filterComponent, RenderPosition.BEFOREEND);
+    if (this._prevFilterComponent === null && this._prevProfileRankComponent === null) {
+      renderElement(this._container, this._filterComponent, RenderPosition.AFTEREND);
+      renderElement(this._container, this._profileRankComponent, RenderPosition.BEFOREEND);
       return;
     }
 
-    replace(this._filterComponent, prevFilterComponent);
-    remove(prevFilterComponent);
+    replace(this._filterComponent, this._prevFilterComponent);
+    replace(this._profileRankComponent, this._prevProfileRankComponent);
+    remove(this._prevFilterComponent);
+    remove(this._prevProfileRankComponent);
   }
 
   _getFilter() {
-    const films = this._filmsModel.getFilms();
+
     return [
       {
         type: FiltersType.ALL,
         name: 'All movies',
-        count: Filters[FiltersType.ALL](films).length,
+        count: Filters[FiltersType.ALL](this._films).length,
       },
       {
         type: FiltersType.WATCHLIST,
         name: 'Watchlist',
-        count: Filters[FiltersType.WATCHLIST](films).length,
+        count: Filters[FiltersType.WATCHLIST](this._films).length,
       },
       {
         type: FiltersType.HISTORY,
         name: 'History',
-        count: Filters[FiltersType.HISTORY](films).length,
+        count: Filters[FiltersType.HISTORY](this._films).length,
       },
       {
         type: FiltersType.FAVORITES,
         name: 'Favorites',
-        count: Filters[FiltersType.FAVORITES](films).length,
+        count: Filters[FiltersType.FAVORITES](this._films).length,
       },
     ];
   }
@@ -97,7 +111,7 @@ export default class Filter {
     this._statisticComponent = new Statistic(this._filmsModel.getFilms());
     this._filterModel.setFilter(null);
 
-    renderElement(this._container, this._statisticComponent, RenderPosition.BEFOREEND);
+    renderElement(document.querySelector('main'), this._statisticComponent, RenderPosition.BEFOREEND);
   }
 
   _destroyStatistic() {

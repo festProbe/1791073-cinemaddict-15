@@ -32,6 +32,23 @@ export default class FilmsModel extends AbstractObserver {
     this._notify(updateType, update);
   }
 
+  deleteComment(updateType, update, updatedCommentId) {
+    for (const film of this._films) {
+      if (film.id === update.id) {
+        const index = film.comments.findIndex((comment) => comment.id === updatedCommentId);
+        if (index === -1) {
+          throw new Error('Can\'t update unexisting comment');
+        }
+        film.comments = [
+          ...film.comments.slice(0, index),
+          ...film.comments.slice(index + 1),
+        ];
+      }
+    }
+
+    this._notify(updateType, update);
+  }
+
   static adaptToClient(film) {
     return {
       id: film.id,

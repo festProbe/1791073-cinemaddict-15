@@ -1,4 +1,4 @@
-import AbstractDefault from '../abstract-component';
+import AbstractDefault from '../abstract-default';
 
 const filmListContainerTemplate = () => '<div class="films-list__container"></div>';
 

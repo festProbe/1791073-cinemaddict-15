@@ -1,5 +1,5 @@
 import { isDescriptionLarge } from '../../utils/component';
-import AbstractComponent from '../abstract-component';
+import AbstractComponent from '../abstract-default';
 import { transformDuration, transformFilmReleaseDateToYear, transformLongDescriptionToShort } from '../../utils/common';
 
 const createFilmCardsTemplate = (film) => {
@@ -30,15 +30,15 @@ export default class FilmCard extends AbstractComponent {
     return createFilmCardsTemplate(this._film);
   }
 
-  _clickHandler(evt) {
-    evt.preventDefault();
-    this._callback.click();
-  }
-
   setShowPopupClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector('.film-card__poster').addEventListener('click', this._clickHandler);
     this.getElement().querySelector('.film-card__title').addEventListener('click', this._clickHandler);
     this.getElement().querySelector('.film-card__comments').addEventListener('click', this._clickHandler);
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 }

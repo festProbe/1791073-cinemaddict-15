@@ -10,6 +10,9 @@ const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 const FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS = 'film-card__controls-item--active';
 const POPUP_ACTIVE_CONTROL_BUTTON_CLASS = 'film-details__control-button--active';
 const SORT_ACTIVE_BUTTON_CLASS = 'sort__button--active';
+const STORE_PREFIX = 'cinemaddict-localstorage';
+const STORE_VER = 'v15';
+const STORE_NAME = `${STORE_PREFIX} - ${STORE_VER}`;
 const PopupModes = {
   CLOSED: 'closed',
   OPENED: 'opened',
@@ -74,6 +77,22 @@ const SuccessHTTPStatusRange = {
   MAX: 299,
 };
 
+const Rating = {
+  MovieBuff: {
+    name: 'Movie Buff',
+    minWatchedMoviesRange: 21,
+  },
+  Fun: {
+    name: 'Fun',
+    minWatchedMoviesRange: 11,
+    maxWatchedMoviesRange: 20,
+  },
+  Novice: {
+    name: 'Novice',
+    minWatchedMoviesRange: 1,
+    maxWatchedMoviesRange: 10,
+  },
+};
 
 export {
   DESCRIPTION_LIMIT,
@@ -88,6 +107,7 @@ export {
   POPUP_ACTIVE_CONTROL_BUTTON_CLASS,
   FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS,
   SORT_ACTIVE_BUTTON_CLASS,
+  STORE_NAME,
   PopupModes,
   SortTypes,
   UserActions,
@@ -97,5 +117,6 @@ export {
   MenuItems,
   Periods,
   Methods,
-  SuccessHTTPStatusRange
+  SuccessHTTPStatusRange,
+  Rating
 };

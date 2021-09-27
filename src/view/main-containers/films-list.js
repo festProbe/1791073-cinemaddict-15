@@ -1,4 +1,4 @@
-import AbstractComponent from '../abstract-component';
+import AbstractComponent from '../abstract-default';
 
 const createFilmListTemplate = () => (
   `<section class="films-list">

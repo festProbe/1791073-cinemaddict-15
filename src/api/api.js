@@ -1,5 +1,5 @@
-import FilmsModel from './model/films';
-import { Methods, SuccessHTTPStatusRange } from './utils/constants';
+import FilmsModel from '../model/films';
+import { Methods, SuccessHTTPStatusRange } from '../utils/constants';
 export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
@@ -37,13 +37,23 @@ export default class Api {
 
   updateFilm(film) {
     return this._load({
-      url: `films/${film.id}`,
+      url: `movies/${film.id}`,
       method: Methods.PUT,
       body: JSON.stringify(FilmsModel.adaptToServer(film)),
       headers: new Headers({ 'Content-Type': 'application/json' }),
     })
       .then(Api.toJSON)
       .then(FilmsModel.adaptToClient);
+  }
+
+  sync(data) {
+    return this._load({
+      url: 'movies/sync',
+      method: Methods.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    })
+      .then(Api.toJSON);
   }
 
   _load({

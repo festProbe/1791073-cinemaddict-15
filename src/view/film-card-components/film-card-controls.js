@@ -1,4 +1,4 @@
-import AbstractComponent from '../abstract-component';
+import AbstractComponent from '../abstract-default';
 import { FILM_CARD_ACTIVE_CONTROL_BUTTON_CLASS } from '../../utils/constants';
 
 export const createControlsTemplate = (film) => {
@@ -22,21 +22,6 @@ export default class FilmCardControls extends AbstractComponent {
 
   getTemplate() { return createControlsTemplate(this._film); }
 
-  _inWatchListHandler(evt) {
-    evt.preventDefault();
-    this._callback.inWatchlistClick();
-  }
-
-  _inHistoryHandler(evt) {
-    evt.preventDefault();
-    this._callback.inHistoryClick();
-  }
-
-  _inFavoritesHandler(evt) {
-    evt.preventDefault();
-    this._callback.inFavoritesClick();
-  }
-
   setInWatchlistClickHandler(callback) {
     this._callback.inWatchlistClick = callback;
     this.getElement().querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this._inWatchListHandler);
@@ -50,5 +35,21 @@ export default class FilmCardControls extends AbstractComponent {
   setInFavoritesClickHandler(callback) {
     this._callback.inFavoritesClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._inFavoritesHandler);
+  }
+
+
+  _inWatchListHandler(evt) {
+    evt.preventDefault();
+    this._callback.inWatchlistClick();
+  }
+
+  _inHistoryHandler(evt) {
+    evt.preventDefault();
+    this._callback.inHistoryClick();
+  }
+
+  _inFavoritesHandler(evt) {
+    evt.preventDefault();
+    this._callback.inFavoritesClick();
   }
 }

@@ -40,7 +40,7 @@ const calculateStats = (state) => {
   </li >
 <li class="statistic__text-item">
   <h4 class="statistic__item-title">Top genre</h4>
-  <p class="statistic__item-text">${statsField.topGenre}</p>
+  <p class="statistic__item-text">${statsField.topGenre ? statsField.topGenre : ''}</p>
 </li>
 </ul>`;
 };
@@ -147,6 +147,19 @@ export default class Statistic extends Smart {
 
   getTemplate() { return createStatisticTemplate(this._state, this._userRank); }
 
+  restoreHandlers() {
+    this._drawChart();
+    this._setPeriodChangeClickHandler();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._genresChart !== null) {
+      this._genresChart = null;
+    }
+  }
+
   _drawChart() {
     if (this._genresChart !== null) {
       this._genresChart = null;
@@ -175,18 +188,5 @@ export default class Statistic extends Smart {
   _setPeriodChangeClickHandler() {
     this.getElement().querySelectorAll('.statistic__filters-input')
       .forEach((item) => item.addEventListener('change', this._onStatisticPeriods));
-  }
-
-  restoreHandlers() {
-    this._drawChart();
-    this._setPeriodChangeClickHandler();
-  }
-
-  removeElement() {
-    super.removeElement();
-
-    if (this._genresChart !== null) {
-      this._genresChart = null;
-    }
   }
 }

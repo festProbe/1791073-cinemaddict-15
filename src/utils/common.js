@@ -19,6 +19,7 @@ export const transformDuration = (filmDuration) => {
 };
 
 export const transformFilmReleaseDateToYear = (releaseDate) => dayjs(releaseDate).get('year');
+export const transformFilmReleaseDate = (releaseDate) => dayjs(releaseDate).format('DD MMMM YYYY');
 
 export const transformLongDescriptionToShort = (description) => `${description.split('').slice(0, DESCRIPTION_LIMIT).join('')}...`;
 
@@ -41,7 +42,8 @@ const changeStatisticByPeriod = (films, dateTo, currentPeriod) => {
 };
 
 export const getStatistic = (state) => {
-  const watchedFilmsByPeriod = changeStatisticByPeriod(state.films, state.dateTo, state.currentPeriod);
+  const watchedFilms = state.films.filter((film) => film.userDetails.isAlreadyWatched);
+  const watchedFilmsByPeriod = changeStatisticByPeriod(watchedFilms, state.dateTo, state.currentPeriod);
   const currentWatchedFilmsCount = watchedFilmsByPeriod.length;
   const uniqueGenres = new Map();
 
@@ -74,3 +76,5 @@ export const getStatistic = (state) => {
     },
   );
 };
+
+export const isOnline = () => window.navigator.onLine;

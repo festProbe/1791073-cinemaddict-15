@@ -1,4 +1,4 @@
-import AbstractComponent from '../abstract-component';
+import AbstractComponent from '../abstract-default';
 
 const createTopRatedFilmsListTemplate = () => (
   `<section class="films-list films-list--extra films-list--top-rated">

@@ -1128,3 +1128,19 @@ button {
   padding-top: 50px;
   padding-bottom: 50px;
 }
+
+.toast-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-height: 70px;
+  background-color: #333;
+}
+
+.toast-item {
+  font-family: "Open Sans";
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 800;
+  color: #ffa600;
+}

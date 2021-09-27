@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { transformDuration } from '../../utils/common';
+import { isOnline, transformDuration, transformFilmReleaseDate } from '../../utils/common';
 import { Emotions, POPUP_ACTIVE_CONTROL_BUTTON_CLASS } from '../../utils/constants';
 import he from 'he';
 import SmartView from '../smart';
@@ -84,15 +84,15 @@ const createPopupTemplate = (state) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${writers}</td>
+              <td class="film-details__cell">${writers.join(', ')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${actors}</td>
+              <td class="film-details__cell">${actors.join(', ')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${date}</td>
+              <td class="film-details__cell">${transformFilmReleaseDate(date)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -119,7 +119,7 @@ const createPopupTemplate = (state) => {
         <h3 class="film-details__comments-title">Comments
           <span class="film-details__comments-count">${state.comments.length}</span>
         </h3>
-        <ul class="film-details__comments-list">${createCommentElement(state.comments)}</ul>
+        <ul class="film-details__comments-list">${isOnline() ? createCommentElement(state.comments) : 'Не могу загрузить комментарии в режиме оффлайн!'}</ul>
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">
             ${pickedEmoji}
@@ -156,6 +156,7 @@ export default class FilmDetails extends SmartView {
     this._onSubmitEnterNewComment = this._onSubmitEnterNewComment.bind(this);
     this._handleIsCommentAdded = this._handleIsCommentAdded.bind(this);
     this._handleIsDeleted = this._handleIsDeleted.bind(this);
+    this._inPopupControlsChangeHandler = this._inPopupControlsChangeHandler.bind(this);
 
     this.setInnerHandlers();
 
@@ -163,27 +164,6 @@ export default class FilmDetails extends SmartView {
   }
 
   getTemplate() { return createPopupTemplate(this._state); }
-
-  _inWatchListHandler(evt) {
-    evt.preventDefault();
-    const scrollTopPosition = this.getElement().scrollTop;
-    this._callback.inWatchlistClick();
-    document.querySelector('.film-details').scrollTop = scrollTopPosition;
-  }
-
-  _inWatchedHandler(evt) {
-    evt.preventDefault();
-    const scrollTopPosition = this.getElement().scrollTop;
-    this._callback.inWatchedClick();
-    document.querySelector('.film-details').scrollTop = scrollTopPosition;
-  }
-
-  _inFavoritesHandler(evt) {
-    evt.preventDefault();
-    const scrollTopPosition = this.getElement().scrollTop;
-    this._callback.inFavoritesClick();
-    document.querySelector('.film-details').scrollTop = scrollTopPosition;
-  }
 
   setInWatchlistClickHandler(callback) {
     this._callback.inWatchlistClick = callback;
@@ -200,10 +180,6 @@ export default class FilmDetails extends SmartView {
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._inFavoritesHandler);
   }
 
-  _closeDetailsClickHandler() {
-    this._callback.toCloseClick();
-  }
-
   setCloseDetailsClickHandler(callback) {
     this._callback.toCloseClick = callback;
     const closeBtn = this.getElement().querySelector('.film-details__close-btn');
@@ -211,20 +187,118 @@ export default class FilmDetails extends SmartView {
     closeBtn.addEventListener('click', this._closeDetailsClickHandler);
   }
 
-  _handleIsCommentAdded(newComments) {
+
+  setOnDeleteCommentClick(callback) {
+    this._callback.onDeleteClick = callback;
+    this.getElement().querySelectorAll('.film-details__comment-delete')
+      .forEach((button) => button.addEventListener('click', this._onDeleteCommentClick));
+  }
+
+  setSubmitNewComment(callback) {
+    this._callback.onSubmitNewComment = callback;
+    this.getElement().querySelector('.film-details__comment-input')
+      .addEventListener('keydown', this._onSubmitEnterNewComment);
+  }
+
+  setInnerHandlers() {
+    const emoji = this.getElement().querySelectorAll('.film-details__emoji-item');
+    const textarea = this.getElement().querySelector('.film-details__comment-input');
+
+    emoji.forEach((emotion) => emotion.addEventListener('click', this._emotionClickHandler));
+    textarea.addEventListener('input', this._commentTextAreaHandler);
+  }
+
+  restoreHandlers() {
+    this.setInnerHandlers();
+
+    this.setCloseDetailsClickHandler(this._callback.toCloseClick);
+
+    this.setInWatchlistClickHandler(this._callback.inWatchlistClick);
+    this.setInWatchedClickHandler(this._callback.inWatchedClick);
+    this.setInFavoritesClickHandler(this._callback.inFavoritesClick);
+
+    this.setOnDeleteCommentClick(this._callback.onDeleteClick);
+    this.setSubmitNewComment(this._callback.onSubmitNewComment);
+  }
+
+  _inPopupControlsChangeHandler(userDetails) {
     const scrollTopPosition = this.getElement().scrollTop;
+    this._state.userDetails = userDetails;
+    this.updateState(this._state.userDetails);
+    document.querySelector('.film-details').scrollTop = scrollTopPosition;
+  }
+
+  _closeDetailsClickHandler() {
+    this._callback.toCloseClick();
+  }
+
+  _handleIsCommentAdded(newComments) {
+    if (newComments === null) {
+      this.shake(this.getElement().querySelector('.film-details__new-comment'));
+      this.updateState({ commentText: null, emotion: null });
+      this.getElement().querySelector('.film-details__comment-input').disabled = false;
+      this.getElement().querySelector('.film-details__emoji-item').disabled = false;
+      return;
+    }
+    const scrollTopPosition = this.getElement().scrollTop;
+    this._state.commentText = null;
+    this._state.emotion = null;
     this.updateState({ comments: newComments });
     document.querySelector('.film-details').scrollTop = scrollTopPosition;
     this.getElement().querySelector('.film-details__comment-input').disabled = false;
     this.getElement().querySelector('.film-details__emoji-item').disabled = false;
   }
 
-  _handleIsDeleted() {
+  _handleIsDeleted(deletedCommentId, isFailed = false) {
+    if (isFailed) {
+      for (const comment of this._state.comments) {
+        if (comment.id === deletedCommentId) {
+          this.shake(this.getElement().querySelector(`li#${deletedCommentId}`));
+          return;
+        }
+      }
+    }
     const scrollTopPosition = this.getElement().scrollTop;
-    this.reset();
+    this.updateState(FilmDetails.parseFilmToData(this._film));
     document.querySelector('.film-details').scrollTop = scrollTopPosition;
     this.getElement().querySelectorAll('.film-details__comment-delete')
       .forEach((button) => button.disabled = false);
+  }
+
+  _createNewComment() {
+    if (!this._state.commentText) {
+      this.shake(this.getElement().querySelector('.film-details__new-comment'));
+      this.getElement().querySelector('.film-details__comment-input').disabled = false;
+      this.getElement().querySelector('.film-details__emoji-item').disabled = false;
+      throw new Error('Нельзя отправить пустой комментарий !');
+    }
+    if (!this._state.emotion) {
+      this.shake(this.getElement().querySelector('.film-details__new-comment'));
+      this.getElement().querySelector('.film-details__comment-input').disabled = false;
+      this.getElement().querySelector('.film-details__emoji-item').disabled = false;
+      throw new Error('Пожалуйста, выберите эмоцию !');
+    }
+
+    const newComment = {
+      emotion: this._state.emotion,
+      comment: this._state.commentText,
+    };
+    return newComment;
+  }
+
+  _inWatchListHandler(evt) {
+    evt.preventDefault();
+    this._callback.inWatchlistClick(this._inPopupControlsChangeHandler);
+  }
+
+  _inWatchedHandler(evt) {
+    evt.preventDefault();
+    this._callback.inWatchedClick(this._inPopupControlsChangeHandler);
+  }
+
+  _inFavoritesHandler(evt) {
+    evt.preventDefault();
+    this._callback.inFavoritesClick(this._inPopupControlsChangeHandler);
   }
 
   _emotionClickHandler(evt) {
@@ -255,28 +329,6 @@ export default class FilmDetails extends SmartView {
     }
   }
 
-  _createNewComment() {
-    if (!this._state.commentText) {
-      throw new Error('Нельзя отправить пустой комментарий !');
-    }
-    if (!this._state.emotion) {
-      throw new Error('Пожалуйста, выберите эмоцию !');
-    }
-
-    const newComment = {
-      emotion: this._state.emotion,
-      comment: this._state.commentText,
-    };
-
-    this._state.comments.push(newComment);
-
-    this._state.commentText = null;
-    this._state.emotion = null;
-
-
-    return newComment;
-  }
-
   _onDeleteCommentClick(evt) {
     evt.preventDefault();
     evt.target.disabled = true;
@@ -286,39 +338,6 @@ export default class FilmDetails extends SmartView {
     this._state.comments = this._state.comments.filter((comment) => comment.id !== targetId);
     this._callback.onDeleteClick(targetId, this._handleIsDeleted);
     document.querySelector('.film-details').scrollTop = scrollTopPosition;
-  }
-
-  setOnDeleteCommentClick(callback) {
-    this._callback.onDeleteClick = callback;
-    this.getElement().querySelectorAll('.film-details__comment-delete')
-      .forEach((button) => button.addEventListener('click', this._onDeleteCommentClick));
-  }
-
-  setSubmitNewComment(callback) {
-    this._callback.onSubmitNewComment = callback;
-    this.getElement().querySelector('.film-details__comment-input')
-      .addEventListener('keydown', this._onSubmitEnterNewComment);
-  }
-
-  setInnerHandlers() {
-    const emoji = this.getElement().querySelectorAll('.film-details__emoji-item');
-    const textarea = this.getElement().querySelector('.film-details__comment-input');
-
-    emoji.forEach((emotion) => emotion.addEventListener('click', this._emotionClickHandler));
-    textarea.addEventListener('input', this._commentTextAreaHandler);
-  }
-
-  restoreHandlers() {
-    this.setInnerHandlers();
-
-    this.setCloseDetailsClickHandler(this._callback.toCloseClick);
-
-    this.setInWatchlistClickHandler(this._callback.watchListClick);
-    this.setInWatchedClickHandler(this._callback.watchedClick);
-    this.setInFavoritesClickHandler(this._callback.favoriteClick);
-
-    this.setOnDeleteCommentClick(this._callback.onDeleteClick);
-    this.setSubmitNewComment(this._callback.onSubmitNewComment);
   }
 
   static parseFilmToData(film) {
@@ -346,11 +365,5 @@ export default class FilmDetails extends SmartView {
     delete state.commentText;
 
     return state;
-  }
-
-  reset(film) {
-    this.updateState(
-      FilmDetails.parseFilmToData(film),
-    );
   }
 }

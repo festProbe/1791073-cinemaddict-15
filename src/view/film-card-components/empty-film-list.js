@@ -1,5 +1,5 @@
 import { FiltersType } from '../../utils/constants';
-import AbstractDefault from '../abstract-component';
+import AbstractDefault from '../abstract-default';
 
 const getFrase = (filter) => {
   switch (filter) {

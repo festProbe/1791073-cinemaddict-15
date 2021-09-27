@@ -1,7 +1,7 @@
-import AbstractComponent from '../view/abstract-component';
+import AbstractComponent from '../view/abstract-default';
 
 export const RenderPosition = {
-  AFTEREEND: 'afterend',
+  AFTEREND: 'afterend',
   BEFOREEND: 'beforeend',
   AFTERBEGIN: 'afterbegin',
 };
@@ -17,10 +17,13 @@ export const renderElement = (container, child, place) => {
 
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.before(child);
+      container.prepend(child);
       break;
     case RenderPosition.BEFOREEND:
       container.append(child);
+      break;
+    case RenderPosition.AFTEREND:
+      container.after(child);
       break;
   }
 };
